@@ -27,7 +27,9 @@ const UserLists = () => {
     setLoading(true);
     try {
       const response = await axios.get(API_URL);
-      setUsers(response.data.data);
+      // Filter out users with empty fullName
+      const validUsers = response.data.data.filter(user => user.fullName && user.fullName.trim() !== '');
+      setUsers(validUsers);
       setError('');
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to fetch users');
