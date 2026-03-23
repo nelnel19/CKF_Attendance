@@ -122,7 +122,7 @@ const UserLists = () => {
       </div>
 
       <Link to="/add" className="add-button">
-        Add New User
+        Add New Member
       </Link>
 
       <div className="table-wrapper">

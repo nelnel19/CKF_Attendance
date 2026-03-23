@@ -46,7 +46,7 @@ const UserInput = () => {
         <div className="custom-logo">
           <span className="logo-text">CKF</span>
         </div>
-        <h1 className="title">Add New User</h1>
+        <h1 className="title">Add New Member</h1>
       </div>
 
       <div className="form-card">
@@ -110,7 +110,7 @@ const UserInput = () => {
 
           <div className="button-group">
             <button type="submit" className="btn-primary" disabled={loading}>
-              {loading ? 'Adding...' : 'Add User'}
+              {loading ? 'Adding...' : 'Add Member'}
             </button>
             <button type="button" className="btn-secondary" onClick={() => navigate('/')}>
               Cancel
