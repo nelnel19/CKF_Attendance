@@ -26,7 +26,7 @@ body {
   gap: 1rem;
   margin-bottom: 2rem;
   padding-bottom: 1rem;
-  border-bottom: 1px solid #e5e5e5;
+  border-bottom: 2px solid #e5e5e5;
 }
 
 .custom-logo {
@@ -37,6 +37,7 @@ body {
   height: 48px;
   background: #000000;
   border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
 .logo-text {
@@ -47,7 +48,7 @@ body {
 }
 
 .title {
-  font-size: 1.875rem;
+  font-size: 1.5rem;
   font-weight: 500;
   color: #000000;
   letter-spacing: -0.025em;
@@ -55,14 +56,16 @@ body {
 
 /* ===== ADD BUTTON ===== */
 .add-button {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
   background: #000000;
   color: #ffffff;
   font-weight: 500;
   padding: 0.625rem 1.25rem;
-  border-radius: 4px;
+  border-radius: 8px;
   text-decoration: none;
-  transition: opacity 0.2s ease;
+  transition: background 0.2s ease, transform 0.1s ease;
   margin-bottom: 1.5rem;
   border: none;
   cursor: pointer;
@@ -70,15 +73,23 @@ body {
   font-family: inherit;
 }
 
+.add-button::before {
+  content: "+";
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
 .add-button:hover {
-  opacity: 0.8;
+  background: #1a1a1a;
+  transform: translateY(-1px);
 }
 
 /* ===== TABLE ===== */
 .table-wrapper {
   overflow-x: auto;
   border: 1px solid #e5e5e5;
-  border-radius: 8px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 
 .user-table {
@@ -88,8 +99,8 @@ body {
 }
 
 .user-table thead {
-  background: #f5f5f5;
-  border-bottom: 1px solid #e5e5e5;
+  background: #fafafa;
+  border-bottom: 2px solid #e5e5e5;
 }
 
 .user-table th {
@@ -100,6 +111,11 @@ body {
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: #333333;
+  border-right: 1px solid #efefef;
+}
+
+.user-table th:last-child {
+  border-right: none;
 }
 
 .user-table td {
@@ -107,10 +123,20 @@ body {
   border-bottom: 1px solid #f0f0f0;
   font-size: 0.875rem;
   color: #000000;
+  border-right: 1px solid #f5f5f5;
+}
+
+.user-table td:last-child {
+  border-right: none;
+}
+
+.user-table tbody tr:nth-child(even) {
+  background-color: #fafafa;
 }
 
 .user-table tbody tr:hover {
-  background: #fafafa;
+  background-color: #f5f5f5;
+  transition: background 0.2s;
 }
 
 /* ===== LOADING & ERROR ===== */
@@ -120,7 +146,8 @@ body {
   font-size: 1rem;
   background: #ffffff;
   border: 1px solid #e5e5e5;
-  border-radius: 8px;
+  border-radius: 12px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
 }
 
 .error {
