@@ -115,9 +115,7 @@ const UserLists = () => {
   return (
     <div className="user-list-container">
       <div className="header">
-        <div className="custom-logo">
-          <span className="logo-text">CKF</span>
-        </div>
+        <img src="/ckflogo.jpg" alt="CKF Logo" className="custom-logo-img" />
         <h1 className="title">CKF Attendance</h1>
       </div>
 

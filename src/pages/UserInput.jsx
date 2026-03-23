@@ -43,10 +43,8 @@ const UserInput = () => {
   return (
     <div className="user-input-container">
       <div className="header">
-        <div className="custom-logo">
-          <span className="logo-text">CKF</span>
-        </div>
-        <h1 className="title">Add New Member</h1>
+        <img src="/ckflogo.jpg" alt="CKF Logo" className="custom-logo-img" />
+        <h1 className="title">Add New User</h1>
       </div>
 
       <div className="form-card">
@@ -110,7 +108,7 @@ const UserInput = () => {
 
           <div className="button-group">
             <button type="submit" className="btn-primary" disabled={loading}>
-              {loading ? 'Adding...' : 'Add Member'}
+              {loading ? 'Adding...' : 'Add User'}
             </button>
             <button type="button" className="btn-secondary" onClick={() => navigate('/')}>
               Cancel
