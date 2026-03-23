@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+import '../styles/userlists.css';
 
 const API_URL = 'https://ckf-attendance-backend.onrender.com/api/users';
 
@@ -26,47 +27,55 @@ const UserLists = () => {
     fetchUsers();
   }, []);
 
-  // Helper to format date as YYYY-MM-DD
   const formatDate = (dateString) => {
     if (!dateString) return 'Date not recorded';
     const date = new Date(dateString);
     if (isNaN(date.getTime())) return 'Invalid date';
-    return date.toISOString().split('T')[0]; // returns "YYYY-MM-DD"
+    return date.toISOString().split('T')[0];
   };
 
-  if (loading) return <p>Loading users...</p>;
-  if (error) return <p style={{ color: 'red' }}>{error}</p>;
+  if (loading) return <div className="loading">Loading users...</div>;
+  if (error) return <div className="error">{error}</div>;
 
   return (
-    <div style={{ margin: '20px' }}>
-      <h2>User List</h2>
-      <Link to="/add">
-        <button>Add New User</button>
+    <div className="user-list-container">
+      <div className="header">
+        <div className="custom-logo">
+          <span className="logo-text">CKF</span>
+        </div>
+        <h1 className="title">CKF Attendance</h1>
+      </div>
+
+      <Link to="/add" className="add-button">
+        + Add New User
       </Link>
-      <table border="1" cellPadding="8" style={{ borderCollapse: 'collapse', width: '100%', marginTop: '10px' }}>
-        <thead>
-          <tr>
-            <th>Full Name</th>
-            <th>Age</th>
-            <th>Address</th>
-            <th>Contact No</th>
-            <th>Cellgroup Leader</th>
-            <th>Created At</th>
-          </tr>
-        </thead>
-        <tbody>
-          {users.map(user => (
-            <tr key={user._id}>
-              <td>{user.fullName}</td>
-              <td>{user.age}</td>
-              <td>{user.address}</td>
-              <td>{user.contactNo}</td>
-              <td>{user.cellgroupLeader}</td>
-              <td>{formatDate(user.createdAt)}</td>
+
+      <div className="table-wrapper">
+        <table className="user-table">
+          <thead>
+            <tr>
+              <th>Full Name</th>
+              <th>Age</th>
+              <th>Address</th>
+              <th>Contact No</th>
+              <th>Cellgroup Leader</th>
+              <th>Created At</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {users.map(user => (
+              <tr key={user._id}>
+                <td>{user.fullName}</td>
+                <td>{user.age}</td>
+                <td>{user.address}</td>
+                <td>{user.contactNo}</td>
+                <td>{user.cellgroupLeader}</td>
+                <td>{formatDate(user.createdAt)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };
