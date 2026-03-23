@@ -52,14 +52,13 @@ const UserLists = () => {
     if (window.confirm(`Are you sure you want to delete ${fullName}?`)) {
       try {
         await axios.delete(`${API_URL}/${id}`);
-        fetchUsers(); // refresh list
+        fetchUsers();
       } catch (err) {
         setError(err.response?.data?.message || 'Failed to delete user');
       }
     }
   };
 
-  // Open modal with user data
   const openEditModal = (user) => {
     setEditingUser(user);
     setEditFormData({
@@ -102,7 +101,7 @@ const UserLists = () => {
         age: parseInt(editFormData.age, 10),
       });
       closeModal();
-      fetchUsers(); // refresh list
+      fetchUsers();
     } catch (err) {
       setEditError(err.response?.data?.message || 'Failed to update user');
     } finally {
