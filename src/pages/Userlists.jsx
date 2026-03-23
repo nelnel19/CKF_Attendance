@@ -123,39 +123,43 @@ const UserLists = () => {
         Add New Member
       </Link>
 
-      <div className="table-wrapper">
-        <table className="user-table">
-          <thead>
-            <tr>
-              <th>Full Name</th>
-              <th>Age</th>
-              <th>Age Category</th>
-              <th>Address</th>
-              <th>Contact No</th>
-              <th>Cellgroup Leader</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {users.map(user => (
-              <tr key={user._id}>
-                <td>{user.fullName}</td>
-                <td>{user.age}</td>
-                <td>{getAgeCategory(user.age)}</td>
-                <td>{user.address}</td>
-                <td>{user.contactNo}</td>
-                <td>{user.cellgroupLeader}</td>
-                <td className="actions">
-                  <button onClick={() => openEditModal(user)} className="edit-btn">Edit</button>
-                  <button onClick={() => handleDelete(user._id, user.fullName)} className="delete-btn">Delete</button>
-                </td>
+      {users.length === 0 ? (
+        <div className="empty-message">No members yet. Add your first member!</div>
+      ) : (
+        <div className="table-wrapper">
+          <table className="user-table">
+            <thead>
+              <tr>
+                <th>Full Name</th>
+                <th>Age</th>
+                <th>Age Category</th>
+                <th>Address</th>
+                <th>Contact No</th>
+                <th>Cellgroup Leader</th>
+                <th>Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              {users.map(user => (
+                <tr key={user._id}>
+                  <td>{user.fullName}</td>
+                  <td>{user.age}</td>
+                  <td>{getAgeCategory(user.age)}</td>
+                  <td>{user.address}</td>
+                  <td>{user.contactNo}</td>
+                  <td>{user.cellgroupLeader}</td>
+                  <td className="actions">
+                    <button onClick={() => openEditModal(user)} className="edit-btn">Edit</button>
+                    <button onClick={() => handleDelete(user._id, user.fullName)} className="delete-btn">Delete</button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
 
-      {/* Edit Modal */}
+      {/* Edit Modal (unchanged) */}
       {isModalOpen && (
         <div className="modal-overlay" onClick={closeModal}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>

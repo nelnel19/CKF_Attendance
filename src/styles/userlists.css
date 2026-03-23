@@ -360,3 +360,12 @@ body {
     padding: 0 1rem;
   }
 }
+.empty-message {
+  text-align: center;
+  padding: 3rem;
+  font-size: 1rem;
+  background: #F2E8D5;
+  border: 1px solid #D4C2A8;
+  border-radius: 12px;
+  color: #6B5A45;
+}
