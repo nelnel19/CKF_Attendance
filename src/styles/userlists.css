@@ -428,3 +428,38 @@ body {
     justify-content: center;
   }
 }
+.filter-group {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.export-btn {
+  background: #1E1A17;
+  color: #F2E8D5;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-family: inherit;
+  transition: background 0.2s ease;
+}
+
+.export-btn:hover {
+  background: #2A241F;
+}
+
+/* Responsive adjustment */
+@media (max-width: 640px) {
+  .filter-group {
+    flex-direction: column;
+    width: 100%;
+  }
+  .filter-group .filter,
+  .filter-group .export-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}

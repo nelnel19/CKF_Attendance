@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+import * as XLSX from 'xlsx';
 import '../styles/userlists.css';
 
 const API_URL = 'https://ckf-attendance-backend.onrender.com/api/users';
@@ -9,7 +10,7 @@ const UserLists = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [filterCategory, setFilterCategory] = useState('all'); // 'all', 'Kids', 'Youth', 'Young Professionals'
+  const [filterCategory, setFilterCategory] = useState('all');
 
   // Modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -28,7 +29,6 @@ const UserLists = () => {
     setLoading(true);
     try {
       const response = await axios.get(API_URL);
-      // Filter out users with empty fullName
       const validUsers = response.data.data.filter(user => user.fullName && user.fullName.trim() !== '');
       setUsers(validUsers);
       setError('');
@@ -49,7 +49,6 @@ const UserLists = () => {
     return 'Young Professionals';
   };
 
-  // Filter users based on selected category
   const filteredUsers = filterCategory === 'all'
     ? users
     : users.filter(user => getAgeCategory(user.age) === filterCategory);
@@ -115,6 +114,31 @@ const UserLists = () => {
     }
   };
 
+  // Export to Excel
+  const exportToExcel = () => {
+    // Prepare data for export
+    const exportData = filteredUsers.map(user => ({
+      'Full Name': user.fullName,
+      'Age': user.age,
+      'Age Category': getAgeCategory(user.age),
+      'Address': user.address,
+      'Contact No': user.contactNo,
+      'Cellgroup Leader': user.cellgroupLeader,
+    }));
+
+    // Create worksheet
+    const ws = XLSX.utils.json_to_sheet(exportData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'CKF_Members');
+
+    // Generate file name with current date
+    const date = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
+    const fileName = `CKF_Members_${date}.xlsx`;
+
+    // Trigger download
+    XLSX.writeFile(wb, fileName);
+  };
+
   if (loading) return <div className="loading">Loading users...</div>;
   if (error) return <div className="error">{error}</div>;
 
@@ -130,18 +154,26 @@ const UserLists = () => {
           Add New Member
         </Link>
 
-        <div className="filter">
-          <label htmlFor="categoryFilter">Filter by Age Category:</label>
-          <select
-            id="categoryFilter"
-            value={filterCategory}
-            onChange={(e) => setFilterCategory(e.target.value)}
-          >
-            <option value="all">All</option>
-            <option value="Kids">Kids (1-12)</option>
-            <option value="Youth">Youth (13-22)</option>
-            <option value="Young Professionals">Young Professionals (23+)</option>
-          </select>
+        <div className="filter-group">
+          <div className="filter">
+            <label htmlFor="categoryFilter">Filter by Age Category:</label>
+            <select
+              id="categoryFilter"
+              value={filterCategory}
+              onChange={(e) => setFilterCategory(e.target.value)}
+            >
+              <option value="all">All</option>
+              <option value="Kids">Kids (1-12)</option>
+              <option value="Youth">Youth (13-22)</option>
+              <option value="Young Professionals">Young Professionals (23+)</option>
+            </select>
+          </div>
+
+          {filteredUsers.length > 0 && (
+            <button className="export-btn" onClick={exportToExcel}>
+              Export to Excel
+            </button>
+          )}
         </div>
       </div>
 
@@ -195,7 +227,6 @@ const UserLists = () => {
             </div>
             {editError && <div className="error-message">{editError}</div>}
             <form onSubmit={handleEditSubmit}>
-              {/* form fields remain same */}
               <div className="form-group">
                 <label>Full Name</label>
                 <input
