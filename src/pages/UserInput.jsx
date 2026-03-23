@@ -44,7 +44,7 @@ const UserInput = () => {
     <div className="user-input-container">
       <div className="header">
         <img src="/ckflogo.jpg" alt="CKF Logo" className="custom-logo-img" />
-        <h1 className="title">Add New User</h1>
+        <h1 className="title">Add New Member</h1>
       </div>
 
       <div className="form-card">
