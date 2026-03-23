@@ -9,6 +9,7 @@ const UserLists = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [filterCategory, setFilterCategory] = useState('all'); // 'all', 'Kids', 'Youth', 'Young Professionals'
 
   // Modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -47,6 +48,11 @@ const UserLists = () => {
     if (age >= 13 && age <= 22) return 'Youth';
     return 'Young Professionals';
   };
+
+  // Filter users based on selected category
+  const filteredUsers = filterCategory === 'all'
+    ? users
+    : users.filter(user => getAgeCategory(user.age) === filterCategory);
 
   const handleDelete = async (id, fullName) => {
     if (window.confirm(`Are you sure you want to delete ${fullName}?`)) {
@@ -119,12 +125,32 @@ const UserLists = () => {
         <h1 className="title">CKF Attendance</h1>
       </div>
 
-      <Link to="/add" className="add-button">
-        Add New Member
-      </Link>
+      <div className="controls">
+        <Link to="/add" className="add-button">
+          Add New Member
+        </Link>
 
-      {users.length === 0 ? (
-        <div className="empty-message">No members yet. Add your first member!</div>
+        <div className="filter">
+          <label htmlFor="categoryFilter">Filter by Age Category:</label>
+          <select
+            id="categoryFilter"
+            value={filterCategory}
+            onChange={(e) => setFilterCategory(e.target.value)}
+          >
+            <option value="all">All</option>
+            <option value="Kids">Kids (1-12)</option>
+            <option value="Youth">Youth (13-22)</option>
+            <option value="Young Professionals">Young Professionals (23+)</option>
+          </select>
+        </div>
+      </div>
+
+      {filteredUsers.length === 0 ? (
+        <div className="empty-message">
+          {filterCategory === 'all'
+            ? 'No members yet. Add your first member!'
+            : `No members in the ${filterCategory} category.`}
+        </div>
       ) : (
         <div className="table-wrapper">
           <table className="user-table">
@@ -140,7 +166,7 @@ const UserLists = () => {
               </tr>
             </thead>
             <tbody>
-              {users.map(user => (
+              {filteredUsers.map(user => (
                 <tr key={user._id}>
                   <td>{user.fullName}</td>
                   <td>{user.age}</td>
@@ -169,6 +195,7 @@ const UserLists = () => {
             </div>
             {editError && <div className="error-message">{editError}</div>}
             <form onSubmit={handleEditSubmit}>
+              {/* form fields remain same */}
               <div className="form-group">
                 <label>Full Name</label>
                 <input
