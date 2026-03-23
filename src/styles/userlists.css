@@ -7,8 +7,8 @@
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  background: #f8fafc;
-  color: #0f172a;
+  background: #ffffff;
+  color: #000000;
   line-height: 1.5;
 }
 
@@ -26,7 +26,7 @@ body {
   gap: 1rem;
   margin-bottom: 2rem;
   padding-bottom: 1rem;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid #e5e5e5;
 }
 
 .custom-logo {
@@ -35,35 +35,34 @@ body {
   justify-content: center;
   width: 48px;
   height: 48px;
-  background: linear-gradient(135deg, #3b82f6, #2563eb);
-  border-radius: 12px;
-  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  background: #000000;
+  border-radius: 8px;
 }
 
 .logo-text {
   font-size: 1.5rem;
-  font-weight: 700;
-  color: white;
+  font-weight: 600;
+  color: #ffffff;
   letter-spacing: -0.5px;
 }
 
 .title {
   font-size: 1.875rem;
-  font-weight: 600;
-  color: #0f172a;
+  font-weight: 500;
+  color: #000000;
   letter-spacing: -0.025em;
 }
 
 /* ===== ADD BUTTON ===== */
 .add-button {
   display: inline-block;
-  background: #3b82f6;
-  color: white;
+  background: #000000;
+  color: #ffffff;
   font-weight: 500;
   padding: 0.625rem 1.25rem;
-  border-radius: 0.5rem;
+  border-radius: 4px;
   text-decoration: none;
-  transition: all 0.2s ease;
+  transition: opacity 0.2s ease;
   margin-bottom: 1.5rem;
   border: none;
   cursor: pointer;
@@ -72,23 +71,25 @@ body {
 }
 
 .add-button:hover {
-  background: #2563eb;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  opacity: 0.8;
 }
 
 /* ===== TABLE ===== */
+.table-wrapper {
+  overflow-x: auto;
+  border: 1px solid #e5e5e5;
+  border-radius: 8px;
+}
+
 .user-table {
   width: 100%;
-  background: white;
-  border-radius: 1rem;
-  overflow: hidden;
-  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  background: #ffffff;
+  border-collapse: collapse;
 }
 
 .user-table thead {
-  background: #f1f5f9;
-  border-bottom: 1px solid #e2e8f0;
+  background: #f5f5f5;
+  border-bottom: 1px solid #e5e5e5;
 }
 
 .user-table th {
@@ -98,18 +99,18 @@ body {
   font-size: 0.875rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: #475569;
+  color: #333333;
 }
 
 .user-table td {
   padding: 1rem 1.5rem;
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom: 1px solid #f0f0f0;
   font-size: 0.875rem;
+  color: #000000;
 }
 
 .user-table tbody tr:hover {
-  background: #f8fafc;
-  transition: background 0.2s ease;
+  background: #fafafa;
 }
 
 /* ===== LOADING & ERROR ===== */
@@ -117,13 +118,13 @@ body {
   text-align: center;
   padding: 3rem;
   font-size: 1rem;
-  background: white;
-  border-radius: 1rem;
-  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+  background: #ffffff;
+  border: 1px solid #e5e5e5;
+  border-radius: 8px;
 }
 
 .error {
-  color: #ef4444;
+  color: #d32f2f;
 }
 
 /* ===== RESPONSIVE ===== */
@@ -141,9 +142,4 @@ body {
   .user-table td {
     padding: 0.75rem 1rem;
   }
-}
-
-.table-wrapper {
-  overflow-x: auto;
-  border-radius: 1rem;
 }

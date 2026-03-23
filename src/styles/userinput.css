@@ -7,8 +7,8 @@
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  background: #f8fafc;
-  color: #0f172a;
+  background: #ffffff;
+  color: #000000;
   line-height: 1.5;
 }
 
@@ -26,7 +26,7 @@ body {
   gap: 1rem;
   margin-bottom: 2rem;
   padding-bottom: 1rem;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid #e5e5e5;
 }
 
 .custom-logo {
@@ -35,30 +35,29 @@ body {
   justify-content: center;
   width: 48px;
   height: 48px;
-  background: linear-gradient(135deg, #3b82f6, #2563eb);
-  border-radius: 12px;
-  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  background: #000000;
+  border-radius: 8px;
 }
 
 .logo-text {
   font-size: 1.5rem;
-  font-weight: 700;
-  color: white;
+  font-weight: 600;
+  color: #ffffff;
   letter-spacing: -0.5px;
 }
 
 .title {
   font-size: 1.875rem;
-  font-weight: 600;
-  color: #0f172a;
+  font-weight: 500;
+  color: #000000;
   letter-spacing: -0.025em;
 }
 
 /* ===== FORM CARD ===== */
 .form-card {
-  background: white;
-  border-radius: 1rem;
-  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  background: #ffffff;
+  border: 1px solid #e5e5e5;
+  border-radius: 8px;
   padding: 2rem;
 }
 
@@ -71,28 +70,28 @@ label {
   font-weight: 500;
   font-size: 0.875rem;
   margin-bottom: 0.5rem;
-  color: #334155;
+  color: #333333;
 }
 
 input {
   width: 100%;
   padding: 0.75rem 1rem;
   font-size: 1rem;
-  border: 1px solid #e2e8f0;
-  border-radius: 0.5rem;
-  transition: all 0.2s ease;
-  background: #fff;
+  border: 1px solid #e5e5e5;
+  border-radius: 4px;
+  transition: border-color 0.2s ease;
+  background: #ffffff;
   font-family: inherit;
+  color: #000000;
 }
 
 input:focus {
   outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  border-color: #000000;
 }
 
 input:hover {
-  border-color: #cbd5e1;
+  border-color: #999999;
 }
 
 /* ===== BUTTONS ===== */
@@ -103,23 +102,21 @@ input:hover {
 }
 
 .btn-primary {
-  background: #3b82f6;
-  color: white;
+  background: #000000;
+  color: #ffffff;
   font-weight: 500;
   padding: 0.75rem 1.5rem;
   border: none;
-  border-radius: 0.5rem;
+  border-radius: 4px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: opacity 0.2s ease;
   font-size: 0.875rem;
   flex: 1;
   font-family: inherit;
 }
 
 .btn-primary:hover:not(:disabled) {
-  background: #2563eb;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  opacity: 0.8;
 }
 
 .btn-primary:disabled {
@@ -128,33 +125,32 @@ input:hover {
 }
 
 .btn-secondary {
-  background: #f1f5f9;
-  color: #334155;
+  background: #f5f5f5;
+  color: #333333;
   font-weight: 500;
   padding: 0.75rem 1.5rem;
-  border: 1px solid #e2e8f0;
-  border-radius: 0.5rem;
+  border: 1px solid #e5e5e5;
+  border-radius: 4px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: background 0.2s ease;
   font-size: 0.875rem;
   flex: 1;
   font-family: inherit;
 }
 
 .btn-secondary:hover {
-  background: #e2e8f0;
-  transform: translateY(-1px);
+  background: #e5e5e5;
 }
 
 /* ===== ERROR MESSAGE ===== */
 .error-message {
-  background: #fee2e2;
-  color: #dc2626;
+  background: #fef2f2;
+  color: #d32f2f;
   padding: 0.75rem 1rem;
-  border-radius: 0.5rem;
+  border-radius: 4px;
   font-size: 0.875rem;
   margin-bottom: 1.5rem;
-  border-left: 4px solid #dc2626;
+  border-left: 4px solid #d32f2f;
 }
 
 /* ===== RESPONSIVE ===== */

@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import '../styles/userinput.css'; // import the CSS
 
-// Hardcoded backend URL
 const API_URL = 'https://ckf-attendance-backend.onrender.com/api/users';
 
 const UserInput = () => {
@@ -41,67 +41,83 @@ const UserInput = () => {
   };
 
   return (
-    <div style={{ margin: '20px', padding: '20px', border: '1px solid #ccc' }}>
-      <h2>Add New User</h2>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Full Name: </label>
-          <input
-            type="text"
-            name="fullName"
-            value={formData.fullName}
-            onChange={handleChange}
-            required
-          />
+    <div className="user-input-container">
+      <div className="header">
+        <div className="custom-logo">
+          <span className="logo-text">CKF</span>
         </div>
-        <div>
-          <label>Age: </label>
-          <input
-            type="number"
-            name="age"
-            value={formData.age}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div>
-          <label>Address: </label>
-          <input
-            type="text"
-            name="address"
-            value={formData.address}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div>
-          <label>Contact No: </label>
-          <input
-            type="text"
-            name="contactNo"
-            value={formData.contactNo}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div>
-          <label>Cellgroup Leader: </label>
-          <input
-            type="text"
-            name="cellgroupLeader"
-            value={formData.cellgroupLeader}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <button type="submit" disabled={loading}>
-          {loading ? 'Adding...' : 'Add User'}
-        </button>
-        <button type="button" onClick={() => navigate('/')} style={{ marginLeft: '10px' }}>
-          Cancel
-        </button>
-      </form>
+        <h1 className="title">Add New User</h1>
+      </div>
+
+      <div className="form-card">
+        {error && <div className="error-message">{error}</div>}
+
+        <form onSubmit={handleSubmit}>
+          <div className="form-group">
+            <label>Full Name</label>
+            <input
+              type="text"
+              name="fullName"
+              value={formData.fullName}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label>Age</label>
+            <input
+              type="number"
+              name="age"
+              value={formData.age}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label>Address</label>
+            <input
+              type="text"
+              name="address"
+              value={formData.address}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label>Contact No</label>
+            <input
+              type="text"
+              name="contactNo"
+              value={formData.contactNo}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label>Cellgroup Leader</label>
+            <input
+              type="text"
+              name="cellgroupLeader"
+              value={formData.cellgroupLeader}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="button-group">
+            <button type="submit" className="btn-primary" disabled={loading}>
+              {loading ? 'Adding...' : 'Add User'}
+            </button>
+            <button type="button" className="btn-secondary" onClick={() => navigate('/')}>
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 };

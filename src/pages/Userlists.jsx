@@ -27,13 +27,6 @@ const UserLists = () => {
     fetchUsers();
   }, []);
 
-  const formatDate = (dateString) => {
-    if (!dateString) return 'Date not recorded';
-    const date = new Date(dateString);
-    if (isNaN(date.getTime())) return 'Invalid date';
-    return date.toISOString().split('T')[0];
-  };
-
   if (loading) return <div className="loading">Loading users...</div>;
   if (error) return <div className="error">{error}</div>;
 
@@ -59,7 +52,6 @@ const UserLists = () => {
               <th>Address</th>
               <th>Contact No</th>
               <th>Cellgroup Leader</th>
-              <th>Created At</th>
             </tr>
           </thead>
           <tbody>
@@ -70,7 +62,6 @@ const UserLists = () => {
                 <td>{user.address}</td>
                 <td>{user.contactNo}</td>
                 <td>{user.cellgroupLeader}</td>
-                <td>{formatDate(user.createdAt)}</td>
               </tr>
             ))}
           </tbody>
