@@ -14,7 +14,7 @@ body {
 
 /* ===== CONTAINER ===== */
 .user-list-container {
-  max-width: 1000px;
+  max-width: 1200px;
   margin: 2rem auto;
   padding: 0 1.5rem;
 }
@@ -53,7 +53,7 @@ body {
   letter-spacing: -0.025em;
   display: inline-block;
   padding: 0.25rem 0.75rem;
-  border: 1px solid #6B5A45; /* soft brown border */
+  border: 1px solid #6B5A45;
   border-radius: 6px;
   background: transparent;
 }
@@ -63,7 +63,7 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  background: #000000; /* black button */
+  background: #000000;
   color: #F2E8D5;
   font-weight: 500;
   padding: 0.625rem 1.25rem;
@@ -84,7 +84,7 @@ body {
 }
 
 .add-button:hover {
-  background: #1E1A17; /* dark brown on hover */
+  background: #1E1A17;
 }
 
 /* ===== TABLE ===== */
@@ -92,7 +92,7 @@ body {
   overflow-x: auto;
   border: 1px solid #6B5A45;
   border-radius: 12px;
-  background: #F2E8D5; /* cream */
+  background: #F2E8D5;
   box-shadow: 0 4px 12px rgba(0,0,0,0.05);
 }
 
@@ -103,13 +103,13 @@ body {
 }
 
 .user-table thead {
-  background: #000000; /* black header */
+  background: #000000;
   border-bottom: 2px solid #6B5A45;
 }
 
 .user-table th {
   text-align: left;
-  padding: 1rem 1.5rem;
+  padding: 1rem 1rem;
   font-weight: 600;
   font-size: 0.875rem;
   text-transform: uppercase;
@@ -123,7 +123,7 @@ body {
 }
 
 .user-table td {
-  padding: 1rem 1.5rem;
+  padding: 1rem 1rem;
   border-bottom: 1px solid #D4C2A8;
   font-size: 0.875rem;
   color: #1E1A17;
@@ -143,6 +143,43 @@ body {
   transition: background 0.2s;
 }
 
+/* ===== ACTION BUTTONS ===== */
+.actions {
+  display: flex;
+  gap: 0.5rem;
+  white-space: nowrap;
+}
+
+.edit-btn, .delete-btn {
+  padding: 0.25rem 0.75rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+  text-decoration: none;
+  display: inline-block;
+  border: none;
+}
+
+.edit-btn {
+  background: #1E1A17;
+  color: #F2E8D5;
+}
+
+.edit-btn:hover {
+  background: #3a2e28;
+}
+
+.delete-btn {
+  background: #8B3C2C;
+  color: #F2E8D5;
+}
+
+.delete-btn:hover {
+  background: #a54e3c;
+}
+
 /* ===== LOADING & ERROR ===== */
 .loading, .error {
   text-align: center;
@@ -156,4 +193,83 @@ body {
 
 .error {
   color: #8B3C2C;
+}
+/* ===== MODAL ===== */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(2px);
+}
+
+.modal-content {
+  background: #F2E8D5;
+  border: 1px solid #6B5A45;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  animation: modalFadeIn 0.2s ease-out;
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  border-bottom: 2px solid #6B5A45;
+}
+
+.modal-header h2 {
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: #1E1A17;
+  margin: 0;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 1.75rem;
+  cursor: pointer;
+  color: #6B5A45;
+  transition: color 0.2s;
+  line-height: 1;
+}
+
+.modal-close:hover {
+  color: #1E1A17;
+}
+
+/* Form inside modal – reuse existing .form-group etc., but ensure proper spacing */
+.modal-content .form-group {
+  margin-bottom: 1.5rem;
+}
+
+.modal-content .button-group {
+  margin-top: 1.5rem;
+}
+
+.modal-content input {
+  background: #FFFCF5;
 }
