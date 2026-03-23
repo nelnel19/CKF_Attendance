@@ -108,7 +108,7 @@ const UserInput = () => {
 
           <div className="button-group">
             <button type="submit" className="btn-primary" disabled={loading}>
-              {loading ? 'Adding...' : 'Add User'}
+              {loading ? 'Adding...' : 'Add Member'}
             </button>
             <button type="button" className="btn-secondary" onClick={() => navigate('/')}>
               Cancel
