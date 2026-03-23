@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import '../styles/userinput.css'; // import the CSS
+import '../styles/userinput.css';
 
 const API_URL = 'https://ckf-attendance-backend.onrender.com/api/users';
 

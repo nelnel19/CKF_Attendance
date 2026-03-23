@@ -7,14 +7,14 @@
 
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  background: #CBB38F; /* beige background */
+  background: #CBB38F;
   color: #1E1A17;
   line-height: 1.5;
 }
 
 /* ===== CONTAINER ===== */
 .user-input-container {
-  max-width: 480px; /* slim, focused */
+  max-width: 480px;
   margin: 3rem auto;
   padding: 0 1.5rem;
 }
@@ -50,16 +50,16 @@ body {
   font-size: 1.5rem;
   font-weight: 500;
   color: #1E1A17;
-  background: #000000; /* black highlight box */
-  padding: 0.25rem 0.75rem;
-  border-radius: 6px;
-  color: #F2E8D5;
   display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border: 1px solid #6B5A45;
+  border-radius: 6px;
+  background: transparent;
 }
 
 /* ===== FORM CARD ===== */
 .form-card {
-  background: #F2E8D5; /* cream background */
+  background: #F2E8D5;
   border: 1px solid #6B5A45;
   border-radius: 12px;
   padding: 2rem;
@@ -86,7 +86,7 @@ input {
   border: 1px solid #6B5A45;
   border-radius: 8px;
   transition: all 0.2s ease;
-  background: #FFFCF5; /* off-white, slightly lighter than cream */
+  background: #FFFCF5;
   font-family: inherit;
   color: #1E1A17;
 }
@@ -133,7 +133,7 @@ input:hover {
 }
 
 .btn-primary:hover:not(:disabled) {
-  background: #1E1A17; /* dark brown on hover */
+  background: #1E1A17;
 }
 
 .btn-primary:disabled {
@@ -171,7 +171,7 @@ input:hover {
 
 /* ===== ERROR MESSAGE ===== */
 .error-message {
-  background: #FEF0E6; /* soft peach */
+  background: #FEF0E6;
   color: #8B3C2C;
   padding: 0.75rem 1rem;
   border-radius: 8px;
