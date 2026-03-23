@@ -23,7 +23,7 @@ body {
 .header {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 1.25rem;
   margin-bottom: 2rem;
   padding-bottom: 1rem;
   border-bottom: 1px solid #D4C2A8;
@@ -41,6 +41,11 @@ body {
   font-weight: 500;
   color: #1E1A17;
   letter-spacing: -0.3px;
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border: 1px solid #D4C2A8;
+  border-radius: 8px;
+  background: transparent;
   margin: 0;
 }
 
