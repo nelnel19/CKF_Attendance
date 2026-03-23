@@ -27,6 +27,7 @@ body {
   margin-bottom: 2rem;
   padding-bottom: 1rem;
   border-bottom: 1px solid #D4C2A8;
+  flex-wrap: wrap;
 }
 
 .custom-logo-img {
@@ -43,7 +44,7 @@ body {
   letter-spacing: -0.3px;
   display: inline-block;
   padding: 0.25rem 0.75rem;
-  border: 1px solid #000000;   /* changed from #D4C2A8 to black */
+  border: 1px solid #000000;
   border-radius: 8px;
   background: transparent;
   margin: 0;
@@ -56,10 +57,6 @@ body {
   border-radius: 20px;
   padding: 2rem;
   transition: box-shadow 0.2s;
-}
-
-.form-card:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
 }
 
 .form-group {
@@ -192,5 +189,21 @@ input:hover {
 
   .button-group {
     flex-direction: column;
+  }
+
+  .header {
+    justify-content: center;
+    text-align: center;
+    gap: 0.75rem;
+  }
+
+  .custom-logo-img {
+    width: 100px;
+    height: 100px;
+  }
+
+  .title {
+    font-size: 1.25rem;
+    width: 100%;
   }
 }

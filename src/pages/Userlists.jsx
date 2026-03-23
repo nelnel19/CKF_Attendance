@@ -116,7 +116,6 @@ const UserLists = () => {
 
   // Export to Excel
   const exportToExcel = () => {
-    // Prepare data for export
     const exportData = filteredUsers.map(user => ({
       'Full Name': user.fullName,
       'Age': user.age,
@@ -126,16 +125,11 @@ const UserLists = () => {
       'Cellgroup Leader': user.cellgroupLeader,
     }));
 
-    // Create worksheet
     const ws = XLSX.utils.json_to_sheet(exportData);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'CKF_Members');
-
-    // Generate file name with current date
     const date = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
     const fileName = `CKF_Members_${date}.xlsx`;
-
-    // Trigger download
     XLSX.writeFile(wb, fileName);
   };
 
@@ -217,7 +211,7 @@ const UserLists = () => {
         </div>
       )}
 
-      {/* Edit Modal (unchanged) */}
+      {/* Edit Modal */}
       {isModalOpen && (
         <div className="modal-overlay" onClick={closeModal}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
