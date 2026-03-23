@@ -1,8 +1,8 @@
-// src/components/UserInput.jsx
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
+// Hardcoded backend URL
 const API_URL = 'https://ckf-attendance-backend.onrender.com/api/users';
 
 const UserInput = () => {
@@ -32,15 +32,7 @@ const UserInput = () => {
         ...formData,
         age: parseInt(formData.age, 10),
       });
-      // Clear form and navigate back to list
-      setFormData({
-        fullName: '',
-        age: '',
-        address: '',
-        contactNo: '',
-        cellgroupLeader: '',
-      });
-      navigate('/'); // go to user list
+      navigate('/');
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to create user');
     } finally {

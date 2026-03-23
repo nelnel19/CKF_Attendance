@@ -1,8 +1,8 @@
-// src/components/UserLists.jsx
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 
+// Hardcoded backend URL
 const API_URL = 'https://ckf-attendance-backend.onrender.com/api/users';
 
 const UserLists = () => {
@@ -25,7 +25,7 @@ const UserLists = () => {
 
   useEffect(() => {
     fetchUsers();
-  }, []); // fetch on mount
+  }, []);
 
   if (loading) return <p>Loading users...</p>;
   if (error) return <p style={{ color: 'red' }}>{error}</p>;
@@ -55,7 +55,11 @@ const UserLists = () => {
               <td>{user.address}</td>
               <td>{user.contactNo}</td>
               <td>{user.cellgroupLeader}</td>
-              <td>{new Date(user.createdAt).toLocaleString()}</td>
+              <td>
+                {user.createdAt
+                  ? new Date(user.createdAt).toLocaleString()
+                  : 'Date not recorded'}
+              </td>
             </tr>
           ))}
         </tbody>
