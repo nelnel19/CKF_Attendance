@@ -6,15 +6,15 @@
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  background: #ffffff;
-  color: #000000;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  background: #CBB38F; /* beige background */
+  color: #1E1A17; /* dark brown text */
   line-height: 1.5;
 }
 
 /* ===== CONTAINER ===== */
 .user-list-container {
-  max-width: 1280px;
+  max-width: 1000px; /* slimmer than before */
   margin: 2rem auto;
   padding: 0 1.5rem;
 }
@@ -26,7 +26,7 @@ body {
   gap: 1rem;
   margin-bottom: 2rem;
   padding-bottom: 1rem;
-  border-bottom: 2px solid #e5e5e5;
+  border-bottom: 2px solid #6B5A45; /* soft brown */
 }
 
 .custom-logo {
@@ -35,23 +35,27 @@ body {
   justify-content: center;
   width: 48px;
   height: 48px;
-  background: #000000;
+  background: #000000; /* black logo background */
   border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
 .logo-text {
   font-size: 1.5rem;
   font-weight: 600;
-  color: #ffffff;
+  color: #F2E8D5; /* cream text */
   letter-spacing: -0.5px;
 }
 
 .title {
-  font-size: 1.5rem;
+  font-size: 1.75rem;
   font-weight: 500;
-  color: #000000;
+  color: #1E1A17;
   letter-spacing: -0.025em;
+  background: #000000; /* black highlight box */
+  padding: 0.25rem 0.75rem;
+  border-radius: 6px;
+  color: #F2E8D5; /* cream text */
+  display: inline-block;
 }
 
 /* ===== ADD BUTTON ===== */
@@ -59,13 +63,13 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  background: #000000;
-  color: #ffffff;
+  background: #000000; /* black button */
+  color: #F2E8D5; /* cream text */
   font-weight: 500;
   padding: 0.625rem 1.25rem;
   border-radius: 8px;
   text-decoration: none;
-  transition: background 0.2s ease, transform 0.1s ease;
+  transition: background 0.2s ease;
   margin-bottom: 1.5rem;
   border: none;
   cursor: pointer;
@@ -80,27 +84,27 @@ body {
 }
 
 .add-button:hover {
-  background: #1a1a1a;
-  transform: translateY(-1px);
+  background: #1E1A17; /* dark brown on hover */
 }
 
 /* ===== TABLE ===== */
 .table-wrapper {
   overflow-x: auto;
-  border: 1px solid #e5e5e5;
+  border: 1px solid #6B5A45; /* soft brown border */
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  background: #F2E8D5; /* cream background */
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
 }
 
 .user-table {
   width: 100%;
-  background: #ffffff;
+  background: #F2E8D5;
   border-collapse: collapse;
 }
 
 .user-table thead {
-  background: #fafafa;
-  border-bottom: 2px solid #e5e5e5;
+  background: #000000; /* black header */
+  border-bottom: 2px solid #6B5A45;
 }
 
 .user-table th {
@@ -110,8 +114,8 @@ body {
   font-size: 0.875rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: #333333;
-  border-right: 1px solid #efefef;
+  color: #F2E8D5; /* cream text */
+  border-right: 1px solid #6B5A45;
 }
 
 .user-table th:last-child {
@@ -120,10 +124,10 @@ body {
 
 .user-table td {
   padding: 1rem 1.5rem;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid #D4C2A8; /* lighter soft brown for rows */
   font-size: 0.875rem;
-  color: #000000;
-  border-right: 1px solid #f5f5f5;
+  color: #1E1A17; /* dark brown text */
+  border-right: 1px solid #D4C2A8;
 }
 
 .user-table td:last-child {
@@ -131,11 +135,11 @@ body {
 }
 
 .user-table tbody tr:nth-child(even) {
-  background-color: #fafafa;
+  background-color: #EADFCB; /* slightly darker cream for zebra */
 }
 
 .user-table tbody tr:hover {
-  background-color: #f5f5f5;
+  background-color: #E0D0B8; /* warm hover */
   transition: background 0.2s;
 }
 
@@ -144,29 +148,12 @@ body {
   text-align: center;
   padding: 3rem;
   font-size: 1rem;
-  background: #ffffff;
-  border: 1px solid #e5e5e5;
+  background: #F2E8D5;
+  border: 1px solid #6B5A45;
   border-radius: 12px;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+  color: #1E1A17;
 }
 
 .error {
-  color: #d32f2f;
-}
-
-/* ===== RESPONSIVE ===== */
-@media (max-width: 768px) {
-  .user-list-container {
-    padding: 0 1rem;
-  }
-  
-  .header {
-    flex-direction: column;
-    text-align: center;
-  }
-  
-  .user-table th,
-  .user-table td {
-    padding: 0.75rem 1rem;
-  }
+  color: #8B3C2C; /* a deep red-ish brown for errors */
 }
