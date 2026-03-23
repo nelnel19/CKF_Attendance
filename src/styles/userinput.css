@@ -30,8 +30,8 @@ body {
 }
 
 .custom-logo-img {
-  width: 44px;
-  height: 44px;
+  width: 64px;
+  height: 64px;
   object-fit: contain;
   border-radius: 8px;
 }
