@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import * as XLSX from 'xlsx';
 import '../styles/userlists.css';
@@ -286,6 +286,10 @@ const UserLists = () => {
     setFilterDate('');
   };
 
+  const handleAddMember = () => {
+    navigate('/add');
+  };
+
   if (loading) return <div className="loading">Loading users...</div>;
   if (error) return <div className="error">{error}</div>;
 
@@ -300,9 +304,9 @@ const UserLists = () => {
 
         <div className="controls">
           <div className="action-buttons">
-            <Link to="/add" className="add-button">
+            <button onClick={handleAddMember} className="add-button">
               Add New Member
-            </Link>
+            </button>
             {selectedUsers.length > 0 && (
               <button onClick={handleDeleteSelected} className="delete-selected-btn">
                 Delete Selected ({selectedUsers.length})
@@ -419,6 +423,7 @@ const UserLists = () => {
         )}
       </div>
 
+      {/* Rest of your modals remain the same */}
       {/* Summary Modal */}
       {showSummaryModal && summaryData && (
         <div className="modal-overlay" onClick={() => setShowSummaryModal(false)}>
