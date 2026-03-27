@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 import * as XLSX from 'xlsx';
 import '../styles/userlists.css';
@@ -7,7 +7,6 @@ import '../styles/userlists.css';
 const API_URL = 'https://ckf-attendance-backend.onrender.com/api/users';
 
 const UserLists = () => {
-  const navigate = useNavigate();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -15,8 +14,6 @@ const UserLists = () => {
   const [filterDate, setFilterDate] = useState('');
   const [showSummaryModal, setShowSummaryModal] = useState(false);
   const [summaryData, setSummaryData] = useState(null);
-  const [selectedUsers, setSelectedUsers] = useState([]);
-  const [selectAll, setSelectAll] = useState(false);
 
   // Modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -73,47 +70,6 @@ const UserLists = () => {
     return matchCategory && matchDate;
   });
 
-  // Handle select all
-  useEffect(() => {
-    if (selectAll) {
-      setSelectedUsers(filteredUsers.map(user => user._id));
-    } else {
-      setSelectedUsers([]);
-    }
-  }, [selectAll, filteredUsers]);
-
-  const handleSelectUser = (userId) => {
-    setSelectedUsers(prev => {
-      if (prev.includes(userId)) {
-        return prev.filter(id => id !== userId);
-      } else {
-        return [...prev, userId];
-      }
-    });
-    setSelectAll(false);
-  };
-
-  // Delete selected users
-  const handleDeleteSelected = async () => {
-    if (selectedUsers.length === 0) {
-      alert('Please select users to delete');
-      return;
-    }
-
-    if (!window.confirm(`Are you sure you want to delete ${selectedUsers.length} selected member(s)? This action cannot be undone.`)) return;
-
-    try {
-      const deletePromises = selectedUsers.map(id => axios.delete(`${API_URL}/${id}`));
-      await Promise.all(deletePromises);
-      setSelectedUsers([]);
-      setSelectAll(false);
-      fetchUsers();
-      alert(`Successfully deleted ${selectedUsers.length} member(s)`);
-    } catch (err) {
-      setError('Failed to delete some users');
-    }
-  };
-
   // Generate summary data
   const generateSummary = () => {
     const usersToSummarize = filterDate ? filteredUsers : users;
@@ -140,12 +96,15 @@ const UserLists = () => {
       const category = getAgeCategory(user.age);
       const gender = user.gender || 'Other';
       
+      // Count by category
       summary.byCategory[category]++;
       
+      // Count by gender
       if (gender === 'Male' || gender === 'Female') {
         summary.byGender[gender]++;
       }
       
+      // Count by category and gender
       if (summary.byCategoryAndGender[category] && (gender === 'Male' || gender === 'Female')) {
         summary.byCategoryAndGender[category][gender]++;
       }
@@ -286,144 +245,110 @@ const UserLists = () => {
     setFilterDate('');
   };
 
-  const handleAddMember = () => {
-    navigate('/add');
-  };
-
   if (loading) return <div className="loading">Loading users...</div>;
   if (error) return <div className="error">{error}</div>;
 
   return (
     <div className="user-list-container">
-      {/* Fixed Header Section */}
-      <div className="fixed-header">
-        <div className="header">
-          <img src="/ckflogo.jpg" alt="CKF Logo" className="custom-logo-img" />
-          <h1 className="title">CKF Attendance</h1>
-        </div>
+      <div className="header">
+        <img src="/ckflogo.jpg" alt="CKF Logo" className="custom-logo-img" />
+        <h1 className="title">CKF Attendance</h1>
+      </div>
 
-        <div className="controls">
-          <div className="action-buttons">
-            <button onClick={handleAddMember} className="add-button">
-              Add New Member
-            </button>
-            {selectedUsers.length > 0 && (
-              <button onClick={handleDeleteSelected} className="delete-selected-btn">
-                Delete Selected ({selectedUsers.length})
+      <div className="controls">
+        <Link to="/add" className="add-button">
+          Add New Member
+        </Link>
+
+        <div className="filter-group">
+          <div className="filter">
+            <label htmlFor="categoryFilter">Age Category:</label>
+            <select
+              id="categoryFilter"
+              value={filterCategory}
+              onChange={(e) => setFilterCategory(e.target.value)}
+            >
+              <option value="all">All Categories</option>
+              <option value="Kids">Kids (1-12)</option>
+              <option value="Youth">Youth (13-22)</option>
+              <option value="Young Professionals">Young Professionals (23+)</option>
+            </select>
+          </div>
+
+          <div className="filter-divider"></div>
+
+          <div className="filter">
+            <label htmlFor="dateFilter">Date Added:</label>
+            <input
+              type="date"
+              id="dateFilter"
+              value={filterDate}
+              onChange={(e) => setFilterDate(e.target.value)}
+              className="date-filter-input"
+            />
+            {filterDate && (
+              <button onClick={clearDateFilter} className="clear-date-btn" title="Clear date filter">
+                ×
               </button>
             )}
           </div>
 
-          <div className="filter-group">
-            <div className="filter">
-              <label htmlFor="categoryFilter">Age Category:</label>
-              <select
-                id="categoryFilter"
-                value={filterCategory}
-                onChange={(e) => setFilterCategory(e.target.value)}
-              >
-                <option value="all">All Categories</option>
-                <option value="Kids">Kids (1-12)</option>
-                <option value="Youth">Youth (13-22)</option>
-                <option value="Young Professionals">Young Professionals (23+)</option>
-              </select>
-            </div>
+          <button className="summary-btn" onClick={generateSummary}>
+            Generate Summary
+          </button>
 
-            <div className="filter-divider"></div>
-
-            <div className="filter">
-              <label htmlFor="dateFilter">Date Added:</label>
-              <input
-                type="date"
-                id="dateFilter"
-                value={filterDate}
-                onChange={(e) => setFilterDate(e.target.value)}
-                className="date-filter-input"
-              />
-              {filterDate && (
-                <button onClick={clearDateFilter} className="clear-date-btn" title="Clear date filter">
-                  ×
-                </button>
-              )}
-            </div>
-
-            <button className="summary-btn" onClick={generateSummary}>
-              Generate Summary
+          {filteredUsers.length > 0 && (
+            <button className="export-btn" onClick={exportToExcel}>
+              Export to Excel
             </button>
-
-            {filteredUsers.length > 0 && (
-              <button className="export-btn" onClick={exportToExcel}>
-                Export to Excel
-              </button>
-            )}
-          </div>
+          )}
         </div>
       </div>
 
-      {/* Scrollable Table Section */}
-      <div className="scrollable-table-wrapper">
-        {filteredUsers.length === 0 ? (
-          <div className="empty-message">
-            {filterCategory === 'all' && !filterDate
-              ? 'No members yet. Add your first member!'
-              : `No members found matching your filters.`}
-          </div>
-        ) : (
-          <div className="table-wrapper">
-            <table className="user-table">
-              <thead>
-                <tr>
-                  <th className="checkbox-col">
-                    <input
-                      type="checkbox"
-                      checked={selectAll}
-                      onChange={(e) => setSelectAll(e.target.checked)}
-                      className="select-all-checkbox"
-                    />
-                  </th>
-                  <th>Full Name</th>
-                  <th>Gender</th>
-                  <th>Age</th>
-                  <th>Age Category</th>
-                  <th>Address</th>
-                  <th>Contact No</th>
-                  <th>Cellgroup Leader</th>
-                  <th>Date Added</th>
-                  <th>Actions</th>
+      {filteredUsers.length === 0 ? (
+        <div className="empty-message">
+          {filterCategory === 'all' && !filterDate
+            ? 'No members yet. Add your first member!'
+            : `No members found matching your filters.`}
+        </div>
+      ) : (
+        <div className="table-wrapper">
+          <table className="user-table">
+            <thead>
+              <tr>
+                <th>Full Name</th>
+                <th>Gender</th>
+                <th>Age</th>
+                <th>Age Category</th>
+                <th>Address</th>
+                <th>Contact No</th>
+                <th>Cellgroup Leader</th>
+                <th>Date Added</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredUsers.map(user => (
+                <tr key={user._id}>
+                  <td>{user.fullName}</td>
+                  <td>{user.gender || '-'}</td>
+                  <td>{user.age}</td>
+                  <td>{getAgeCategory(user.age)}</td>
+                  <td>{user.address}</td>
+                  <td>{user.contactNo}</td>
+                  <td>{user.cellgroupLeader}</td>
+                  <td>{new Date(user.createdAt).toLocaleDateString()}</td>
+                  <td className="actions">
+                    <button onClick={() => openEditModal(user)} className="edit-btn">Edit</button>
+                    <button onClick={() => handleDelete(user._id, user.fullName)} className="delete-btn">Delete</button>
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                {filteredUsers.map(user => (
-                  <tr key={user._id} className={selectedUsers.includes(user._id) ? 'selected-row' : ''}>
-                    <td className="checkbox-col">
-                      <input
-                        type="checkbox"
-                        checked={selectedUsers.includes(user._id)}
-                        onChange={() => handleSelectUser(user._id)}
-                        className="user-checkbox"
-                      />
-                    </td>
-                    <td>{user.fullName}</td>
-                    <td>{user.gender || '-'}</td>
-                    <td>{user.age}</td>
-                    <td>{getAgeCategory(user.age)}</td>
-                    <td>{user.address}</td>
-                    <td>{user.contactNo}</td>
-                    <td>{user.cellgroupLeader}</td>
-                    <td>{new Date(user.createdAt).toLocaleDateString()}</td>
-                    <td className="actions">
-                      <button onClick={() => openEditModal(user)} className="edit-btn">Edit</button>
-                      <button onClick={() => handleDelete(user._id, user.fullName)} className="delete-btn">Delete</button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
 
-      {/* Rest of your modals remain the same */}
       {/* Summary Modal */}
       {showSummaryModal && summaryData && (
         <div className="modal-overlay" onClick={() => setShowSummaryModal(false)}>
