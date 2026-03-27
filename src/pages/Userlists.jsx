@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import * as XLSX from 'xlsx';
 import '../styles/userlists.css';
@@ -7,6 +7,7 @@ import '../styles/userlists.css';
 const API_URL = 'https://ckf-attendance-backend.onrender.com/api/users';
 
 const UserLists = () => {
+  const navigate = useNavigate();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');

@@ -1,4 +1,3 @@
-// src/App.js
 import { HashRouter, Routes, Route } from 'react-router-dom';
 import Userlists from './pages/Userlists';
 import Userinput from './pages/UserInput';
