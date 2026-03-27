@@ -11,6 +11,9 @@ const UserLists = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [filterCategory, setFilterCategory] = useState('all');
+  const [filterDate, setFilterDate] = useState('');
+  const [showSummaryModal, setShowSummaryModal] = useState(false);
+  const [summaryData, setSummaryData] = useState(null);
 
   // Modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -50,9 +53,106 @@ const UserLists = () => {
     return 'Young Professionals';
   };
 
-  const filteredUsers = filterCategory === 'all'
-    ? users
-    : users.filter(user => getAgeCategory(user.age) === filterCategory);
+  // Filter users by category and date
+  const filteredUsers = users.filter(user => {
+    let matchCategory = true;
+    let matchDate = true;
+
+    if (filterCategory !== 'all') {
+      matchCategory = getAgeCategory(user.age) === filterCategory;
+    }
+
+    if (filterDate) {
+      const userDate = new Date(user.createdAt).toISOString().split('T')[0];
+      matchDate = userDate === filterDate;
+    }
+
+    return matchCategory && matchDate;
+  });
+
+  // Generate summary data
+  const generateSummary = () => {
+    const usersToSummarize = filterDate ? filteredUsers : users;
+    
+    const summary = {
+      total: usersToSummarize.length,
+      byCategory: {
+        Kids: 0,
+        Youth: 0,
+        'Young Professionals': 0
+      },
+      byGender: {
+        Male: 0,
+        Female: 0
+      },
+      byCategoryAndGender: {
+        Kids: { Male: 0, Female: 0 },
+        Youth: { Male: 0, Female: 0 },
+        'Young Professionals': { Male: 0, Female: 0 }
+      }
+    };
+
+    usersToSummarize.forEach(user => {
+      const category = getAgeCategory(user.age);
+      const gender = user.gender || 'Other';
+      
+      // Count by category
+      summary.byCategory[category]++;
+      
+      // Count by gender
+      if (gender === 'Male' || gender === 'Female') {
+        summary.byGender[gender]++;
+      }
+      
+      // Count by category and gender
+      if (summary.byCategoryAndGender[category] && (gender === 'Male' || gender === 'Female')) {
+        summary.byCategoryAndGender[category][gender]++;
+      }
+    });
+
+    setSummaryData(summary);
+    setShowSummaryModal(true);
+  };
+
+  // Export summary to Excel
+  const exportSummaryToExcel = () => {
+    if (!summaryData) return;
+
+    const summaryRows = [
+      ['CKF ATTENDANCE SUMMARY REPORT'],
+      [''],
+      [`Report Date: ${filterDate || 'All Time'}`],
+      [`Generated: ${new Date().toLocaleString()}`],
+      [''],
+      ['OVERALL STATISTICS'],
+      ['Total Members', summaryData.total],
+      [''],
+      ['BY AGE CATEGORY'],
+      ['Category', 'Count'],
+      ['Kids', summaryData.byCategory.Kids],
+      ['Youth', summaryData.byCategory.Youth],
+      ['Young Professionals', summaryData.byCategory['Young Professionals']],
+      [''],
+      ['BY GENDER'],
+      ['Gender', 'Count'],
+      ['Male', summaryData.byGender.Male],
+      ['Female', summaryData.byGender.Female],
+      [''],
+      ['DETAILED BREAKDOWN BY CATEGORY & GENDER'],
+      ['Category', 'Male', 'Female', 'Total'],
+      ['Kids', summaryData.byCategoryAndGender.Kids.Male, summaryData.byCategoryAndGender.Kids.Female, summaryData.byCategory.Kids],
+      ['Youth', summaryData.byCategoryAndGender.Youth.Male, summaryData.byCategoryAndGender.Youth.Female, summaryData.byCategory.Youth],
+      ['Young Professionals', summaryData.byCategoryAndGender['Young Professionals'].Male, summaryData.byCategoryAndGender['Young Professionals'].Female, summaryData.byCategory['Young Professionals']],
+      [''],
+      ['TOTAL', summaryData.byGender.Male, summaryData.byGender.Female, summaryData.total]
+    ];
+
+    const ws = XLSX.utils.aoa_to_sheet(summaryRows);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'CKF_Summary');
+    const fileName = `CKF_Summary_${filterDate || 'All_Time'}_${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.xlsx`;
+    XLSX.writeFile(wb, fileName);
+  };
 
   const handleDelete = async (id, fullName) => {
     if (window.confirm(`Are you sure you want to delete ${fullName}?`)) {
@@ -127,6 +227,7 @@ const UserLists = () => {
       'Address': user.address,
       'Contact No': user.contactNo,
       'Cellgroup Leader': user.cellgroupLeader,
+      'Date Added': new Date(user.createdAt).toLocaleDateString()
     }));
 
     const ws = XLSX.utils.json_to_sheet(exportData);
@@ -135,6 +236,10 @@ const UserLists = () => {
     const date = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
     const fileName = `CKF_Members_${date}.xlsx`;
     XLSX.writeFile(wb, fileName);
+  };
+
+  const clearDateFilter = () => {
+    setFilterDate('');
   };
 
   if (loading) return <div className="loading">Loading users...</div>;
@@ -154,18 +259,40 @@ const UserLists = () => {
 
         <div className="filter-group">
           <div className="filter">
-            <label htmlFor="categoryFilter">Filter by Age Category:</label>
+            <label htmlFor="categoryFilter">Age Category:</label>
             <select
               id="categoryFilter"
               value={filterCategory}
               onChange={(e) => setFilterCategory(e.target.value)}
             >
-              <option value="all">All</option>
+              <option value="all">All Categories</option>
               <option value="Kids">Kids (1-12)</option>
               <option value="Youth">Youth (13-22)</option>
               <option value="Young Professionals">Young Professionals (23+)</option>
             </select>
           </div>
+
+          <div className="filter-divider"></div>
+
+          <div className="filter">
+            <label htmlFor="dateFilter">Date Added:</label>
+            <input
+              type="date"
+              id="dateFilter"
+              value={filterDate}
+              onChange={(e) => setFilterDate(e.target.value)}
+              className="date-filter-input"
+            />
+            {filterDate && (
+              <button onClick={clearDateFilter} className="clear-date-btn" title="Clear date filter">
+                ×
+              </button>
+            )}
+          </div>
+
+          <button className="summary-btn" onClick={generateSummary}>
+            Generate Summary
+          </button>
 
           {filteredUsers.length > 0 && (
             <button className="export-btn" onClick={exportToExcel}>
@@ -177,9 +304,9 @@ const UserLists = () => {
 
       {filteredUsers.length === 0 ? (
         <div className="empty-message">
-          {filterCategory === 'all'
+          {filterCategory === 'all' && !filterDate
             ? 'No members yet. Add your first member!'
-            : `No members in the ${filterCategory} category.`}
+            : `No members found matching your filters.`}
         </div>
       ) : (
         <div className="table-wrapper">
@@ -193,6 +320,7 @@ const UserLists = () => {
                 <th>Address</th>
                 <th>Contact No</th>
                 <th>Cellgroup Leader</th>
+                <th>Date Added</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -206,6 +334,7 @@ const UserLists = () => {
                   <td>{user.address}</td>
                   <td>{user.contactNo}</td>
                   <td>{user.cellgroupLeader}</td>
+                  <td>{new Date(user.createdAt).toLocaleDateString()}</td>
                   <td className="actions">
                     <button onClick={() => openEditModal(user)} className="edit-btn">Edit</button>
                     <button onClick={() => handleDelete(user._id, user.fullName)} className="delete-btn">Delete</button>
@@ -214,6 +343,107 @@ const UserLists = () => {
               ))}
             </tbody>
           </table>
+        </div>
+      )}
+
+      {/* Summary Modal */}
+      {showSummaryModal && summaryData && (
+        <div className="modal-overlay" onClick={() => setShowSummaryModal(false)}>
+          <div className="summary-modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>Attendance Summary Report</h2>
+              <button className="modal-close" onClick={() => setShowSummaryModal(false)}>&times;</button>
+            </div>
+            
+            <div className="summary-body">
+              <div className="summary-info">
+                <p><strong>Report Date:</strong> {filterDate || 'All Time'}</p>
+                <p><strong>Generated:</strong> {new Date().toLocaleString()}</p>
+                <p><strong>Total Members:</strong> {summaryData.total}</p>
+              </div>
+
+              <div className="summary-section">
+                <h3>By Age Category</h3>
+                <div className="summary-stats">
+                  <div className="stat-card">
+                    <span className="stat-label">Kids</span>
+                    <span className="stat-number">{summaryData.byCategory.Kids}</span>
+                  </div>
+                  <div className="stat-card">
+                    <span className="stat-label">Youth</span>
+                    <span className="stat-number">{summaryData.byCategory.Youth}</span>
+                  </div>
+                  <div className="stat-card">
+                    <span className="stat-label">Young Professionals</span>
+                    <span className="stat-number">{summaryData.byCategory['Young Professionals']}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="summary-section">
+                <h3>By Gender</h3>
+                <div className="summary-stats">
+                  <div className="stat-card">
+                    <span className="stat-label">Male</span>
+                    <span className="stat-number">{summaryData.byGender.Male}</span>
+                  </div>
+                  <div className="stat-card">
+                    <span className="stat-label">Female</span>
+                    <span className="stat-number">{summaryData.byGender.Female}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="summary-section">
+                <h3>Detailed Breakdown</h3>
+                <table className="summary-table">
+                  <thead>
+                    <tr>
+                      <th>Category</th>
+                      <th>Male</th>
+                      <th>Female</th>
+                      <th>Total</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Kids</td>
+                      <td>{summaryData.byCategoryAndGender.Kids.Male}</td>
+                      <td>{summaryData.byCategoryAndGender.Kids.Female}</td>
+                      <td>{summaryData.byCategory.Kids}</td>
+                    </tr>
+                    <tr>
+                      <td>Youth</td>
+                      <td>{summaryData.byCategoryAndGender.Youth.Male}</td>
+                      <td>{summaryData.byCategoryAndGender.Youth.Female}</td>
+                      <td>{summaryData.byCategory.Youth}</td>
+                    </tr>
+                    <tr>
+                      <td>Young Professionals</td>
+                      <td>{summaryData.byCategoryAndGender['Young Professionals'].Male}</td>
+                      <td>{summaryData.byCategoryAndGender['Young Professionals'].Female}</td>
+                      <td>{summaryData.byCategory['Young Professionals']}</td>
+                    </tr>
+                    <tr className="summary-total">
+                      <td><strong>TOTAL</strong></td>
+                      <td><strong>{summaryData.byGender.Male}</strong></td>
+                      <td><strong>{summaryData.byGender.Female}</strong></td>
+                      <td><strong>{summaryData.total}</strong></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div className="modal-footer">
+              <button onClick={exportSummaryToExcel} className="btn-primary export-summary-btn">
+                Export to Excel
+              </button>
+              <button onClick={() => setShowSummaryModal(false)} className="btn-secondary">
+                Close
+              </button>
+            </div>
+          </div>
         </div>
       )}
 
