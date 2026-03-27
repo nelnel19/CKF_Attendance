@@ -9,6 +9,7 @@ const UserInput = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     fullName: '',
+    gender: '',
     age: '',
     address: '',
     contactNo: '',
@@ -51,26 +52,58 @@ const UserInput = () => {
         {error && <div className="error-message">{error}</div>}
 
         <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label>Full Name</label>
-            <input
-              type="text"
-              name="fullName"
-              value={formData.fullName}
-              onChange={handleChange}
-              required
-            />
+          <div className="form-row">
+            <div className="form-group">
+              <label>Full Name</label>
+              <input
+                type="text"
+                name="fullName"
+                value={formData.fullName}
+                onChange={handleChange}
+                placeholder="Enter full name"
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Gender</label>
+              <select
+                name="gender"
+                value={formData.gender}
+                onChange={handleChange}
+                required
+              >
+                <option value="">Select gender</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+              </select>
+            </div>
           </div>
 
-          <div className="form-group">
-            <label>Age</label>
-            <input
-              type="number"
-              name="age"
-              value={formData.age}
-              onChange={handleChange}
-              required
-            />
+          <div className="form-row">
+            <div className="form-group">
+              <label>Age</label>
+              <input
+                type="number"
+                name="age"
+                value={formData.age}
+                onChange={handleChange}
+                placeholder="Enter age"
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Contact No</label>
+              <input
+                type="text"
+                name="contactNo"
+                value={formData.contactNo}
+                onChange={handleChange}
+                placeholder="Enter contact number"
+                required
+              />
+            </div>
           </div>
 
           <div className="form-group">
@@ -80,17 +113,7 @@ const UserInput = () => {
               name="address"
               value={formData.address}
               onChange={handleChange}
-              required
-            />
-          </div>
-
-          <div className="form-group">
-            <label>Contact No</label>
-            <input
-              type="text"
-              name="contactNo"
-              value={formData.contactNo}
-              onChange={handleChange}
+              placeholder="Enter complete address"
               required
             />
           </div>
@@ -102,6 +125,7 @@ const UserInput = () => {
               name="cellgroupLeader"
               value={formData.cellgroupLeader}
               onChange={handleChange}
+              placeholder="Enter cellgroup leader name"
               required
             />
           </div>

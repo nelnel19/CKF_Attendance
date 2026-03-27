@@ -17,6 +17,7 @@ const UserLists = () => {
   const [editingUser, setEditingUser] = useState(null);
   const [editFormData, setEditFormData] = useState({
     fullName: '',
+    gender: '',
     age: '',
     address: '',
     contactNo: '',
@@ -68,6 +69,7 @@ const UserLists = () => {
     setEditingUser(user);
     setEditFormData({
       fullName: user.fullName,
+      gender: user.gender || '',
       age: user.age,
       address: user.address,
       contactNo: user.contactNo,
@@ -82,6 +84,7 @@ const UserLists = () => {
     setEditingUser(null);
     setEditFormData({
       fullName: '',
+      gender: '',
       age: '',
       address: '',
       contactNo: '',
@@ -118,6 +121,7 @@ const UserLists = () => {
   const exportToExcel = () => {
     const exportData = filteredUsers.map(user => ({
       'Full Name': user.fullName,
+      'Gender': user.gender || '-',
       'Age': user.age,
       'Age Category': getAgeCategory(user.age),
       'Address': user.address,
@@ -183,6 +187,7 @@ const UserLists = () => {
             <thead>
               <tr>
                 <th>Full Name</th>
+                <th>Gender</th>
                 <th>Age</th>
                 <th>Age Category</th>
                 <th>Address</th>
@@ -195,6 +200,7 @@ const UserLists = () => {
               {filteredUsers.map(user => (
                 <tr key={user._id}>
                   <td>{user.fullName}</td>
+                  <td>{user.gender || '-'}</td>
                   <td>{user.age}</td>
                   <td>{getAgeCategory(user.age)}</td>
                   <td>{user.address}</td>
@@ -216,31 +222,60 @@ const UserLists = () => {
         <div className="modal-overlay" onClick={closeModal}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
-              <h2>Edit User</h2>
+              <h2>Edit Member</h2>
               <button className="modal-close" onClick={closeModal}>&times;</button>
             </div>
             {editError && <div className="error-message">{editError}</div>}
             <form onSubmit={handleEditSubmit}>
-              <div className="form-group">
-                <label>Full Name</label>
-                <input
-                  type="text"
-                  name="fullName"
-                  value={editFormData.fullName}
-                  onChange={handleEditChange}
-                  required
-                />
+              <div className="form-row">
+                <div className="form-group">
+                  <label>Full Name</label>
+                  <input
+                    type="text"
+                    name="fullName"
+                    value={editFormData.fullName}
+                    onChange={handleEditChange}
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Gender</label>
+                  <select
+                    name="gender"
+                    value={editFormData.gender}
+                    onChange={handleEditChange}
+                    required
+                  >
+                    <option value="">Select gender</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                  </select>
+                </div>
               </div>
-              <div className="form-group">
-                <label>Age</label>
-                <input
-                  type="number"
-                  name="age"
-                  value={editFormData.age}
-                  onChange={handleEditChange}
-                  required
-                />
+
+              <div className="form-row">
+                <div className="form-group">
+                  <label>Age</label>
+                  <input
+                    type="number"
+                    name="age"
+                    value={editFormData.age}
+                    onChange={handleEditChange}
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Contact No</label>
+                  <input
+                    type="text"
+                    name="contactNo"
+                    value={editFormData.contactNo}
+                    onChange={handleEditChange}
+                    required
+                  />
+                </div>
               </div>
+
               <div className="form-group">
                 <label>Address</label>
                 <input
@@ -251,16 +286,7 @@ const UserLists = () => {
                   required
                 />
               </div>
-              <div className="form-group">
-                <label>Contact No</label>
-                <input
-                  type="text"
-                  name="contactNo"
-                  value={editFormData.contactNo}
-                  onChange={handleEditChange}
-                  required
-                />
-              </div>
+
               <div className="form-group">
                 <label>Cellgroup Leader</label>
                 <input
@@ -271,6 +297,7 @@ const UserLists = () => {
                   required
                 />
               </div>
+
               <div className="button-group">
                 <button type="submit" className="btn-primary" disabled={saving}>
                   {saving ? 'Saving...' : 'Save Changes'}
