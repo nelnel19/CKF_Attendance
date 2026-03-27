@@ -113,27 +113,6 @@ const UserLists = () => {
     }
   };
 
-  // Delete all users
-  const handleDeleteAll = async () => {
-    if (filteredUsers.length === 0) {
-      alert('No users to delete');
-      return;
-    }
-
-    if (!window.confirm(`⚠️ WARNING: This will delete ALL ${filteredUsers.length} member(s) permanently. This action cannot be undone! Are you absolutely sure?`)) return;
-
-    try {
-      const deletePromises = filteredUsers.map(user => axios.delete(`${API_URL}/${user._id}`));
-      await Promise.all(deletePromises);
-      setSelectedUsers([]);
-      setSelectAll(false);
-      fetchUsers();
-      alert(`Successfully deleted all ${filteredUsers.length} member(s)`);
-    } catch (err) {
-      setError('Failed to delete all users');
-    }
-  };
-
   // Generate summary data
   const generateSummary = () => {
     const usersToSummarize = filterDate ? filteredUsers : users;
@@ -326,11 +305,6 @@ const UserLists = () => {
             {selectedUsers.length > 0 && (
               <button onClick={handleDeleteSelected} className="delete-selected-btn">
                 Delete Selected ({selectedUsers.length})
-              </button>
-            )}
-            {filteredUsers.length > 0 && (
-              <button onClick={handleDeleteAll} className="delete-all-btn">
-                Delete All
               </button>
             )}
           </div>
