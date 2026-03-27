@@ -290,8 +290,8 @@ const UserLists = () => {
 
   return (
     <div className="user-list-container">
-      {/* Fixed Header Section */}
-      <div className="fixed-header">
+      {/* Header Section - Simple and Fixed */}
+      <div className="header-section">
         <div className="header">
           <img src="/ckflogo.jpg" alt="CKF Logo" className="custom-logo-img" />
           <h1 className="title">CKF Attendance</h1>
@@ -355,8 +355,8 @@ const UserLists = () => {
         </div>
       </div>
 
-      {/* Scrollable Table Section */}
-      <div className="scrollable-table-wrapper">
+      {/* Table Section */}
+      <div className="table-section">
         {filteredUsers.length === 0 ? (
           <div className="empty-message">
             {filterCategory === 'all' && !filterDate
