@@ -118,11 +118,14 @@ const UserLists = () => {
   const exportSummaryToExcel = () => {
     if (!summaryData) return;
 
+    const currentDate = new Date().toLocaleDateString();
+    const reportDate = filterDate || 'All Time';
+
     const summaryRows = [
       ['CKF ATTENDANCE SUMMARY REPORT'],
       [''],
-      [`Report Date: ${filterDate || 'All Time'}`],
-      [`Generated: ${new Date().toLocaleString()}`],
+      [`Report Date: ${reportDate}`],
+      [`Generated: ${currentDate}`],
       [''],
       ['OVERALL STATISTICS'],
       ['Total Members', summaryData.total],
@@ -150,7 +153,7 @@ const UserLists = () => {
     const ws = XLSX.utils.aoa_to_sheet(summaryRows);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'CKF_Summary');
-    const fileName = `CKF_Summary_${filterDate || 'All_Time'}_${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.xlsx`;
+    const fileName = `CKF_Summary_${reportDate.replace(/\//g, '-')}_${currentDate.replace(/\//g, '-')}.xlsx`;
     XLSX.writeFile(wb, fileName);
   };
 
@@ -358,7 +361,7 @@ const UserLists = () => {
             <div className="summary-body">
               <div className="summary-info">
                 <p><strong>Report Date:</strong> {filterDate || 'All Time'}</p>
-                <p><strong>Generated:</strong> {new Date().toLocaleString()}</p>
+                <p><strong>Generated:</strong> {new Date().toLocaleDateString()}</p>
                 <p><strong>Total Members:</strong> {summaryData.total}</p>
               </div>
 
