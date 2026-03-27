@@ -15,9 +15,19 @@ body {
 
 /* ===== CONTAINER ===== */
 .user-list-container {
-  max-width: 1400px;
-  margin: 1.5rem auto;
-  padding: 0 1.5rem;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ===== FIXED HEADER ===== */
+.fixed-header {
+  flex-shrink: 0;
+  background: linear-gradient(135deg, #CBB38F 0%, #B89A6E 100%);
+  padding: 1rem 1.5rem 0.5rem 1.5rem;
+  border-bottom: 2px solid #000000;
+  z-index: 100;
 }
 
 /* ===== HEADER ===== */
@@ -25,9 +35,8 @@ body {
   display: flex;
   align-items: center;
   gap: 1rem;
-  margin-bottom: 1.5rem;
-  padding-bottom: 0.75rem;
-  border-bottom: 2px solid #000000;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
   flex-wrap: wrap;
 }
 
@@ -55,11 +64,15 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.25rem;
   flex-wrap: wrap;
+  gap: 1rem;
+  padding-bottom: 0.5rem;
+}
+
+.action-buttons {
+  display: flex;
   gap: 0.75rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid #000000;
+  align-items: center;
 }
 
 .add-button {
@@ -88,6 +101,32 @@ body {
 .add-button:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(30, 26, 23, 0.2);
+}
+
+.delete-selected-btn {
+  background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+  color: white;
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+  border-radius: 10px;
+  border: 1px solid #000000;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-family: inherit;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.delete-selected-btn::before {
+  content: "🗑️";
+  font-size: 0.9rem;
+}
+
+.delete-selected-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
 }
 
 .filter-group {
@@ -201,6 +240,13 @@ body {
   transform: translateY(-1px);
 }
 
+/* ===== SCROLLABLE TABLE SECTION ===== */
+.scrollable-table-wrapper {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 1.5rem 1.5rem 1.5rem;
+}
+
 /* ===== TABLE ===== */
 .table-wrapper {
   overflow-x: auto;
@@ -216,7 +262,7 @@ body {
   background: #FFFFFF;
   border-collapse: collapse;
   font-size: 0.8rem;
-  min-width: 1000px;
+  min-width: 1100px;
 }
 
 .user-table th {
@@ -249,6 +295,30 @@ body {
 
 .user-table tbody tr:hover {
   background-color: #FCFAF7;
+}
+
+.user-table tbody tr.selected-row {
+  background-color: rgba(245, 196, 0, 0.15);
+}
+
+/* Checkbox Column */
+.checkbox-col {
+  width: 40px;
+  text-align: center;
+}
+
+.checkbox-col input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: #F5C400;
+}
+
+.select-all-checkbox {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: #F5C400;
 }
 
 /* ===== ACTION BUTTONS ===== */
@@ -631,9 +701,12 @@ body {
 
 /* ===== RESPONSIVE ADJUSTMENTS ===== */
 @media (max-width: 768px) {
-  .user-list-container {
-    padding: 0 1rem;
-    margin: 1rem auto;
+  .fixed-header {
+    padding: 0.75rem 1rem 0.25rem 1rem;
+  }
+
+  .scrollable-table-wrapper {
+    padding: 0 1rem 1rem 1rem;
   }
 
   .header {
@@ -654,6 +727,11 @@ body {
   .controls {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .action-buttons {
+    width: 100%;
+    justify-content: center;
   }
 
   .filter-group {
