@@ -844,75 +844,58 @@ body {
     width: 100%;
   }
 }
-/* Sticky Header Section */
-.sticky-header-section {
-  position: sticky;
-  top: 0;
-  background: linear-gradient(135deg, #CBB38F 0%, #B89A6E 100%);
-  z-index: 100;
-  padding-bottom: 1rem;
-  margin-bottom: 1rem;
-}
-
-/* Scrollable Content */
-.scrollable-content {
-  max-height: calc(100vh - 280px);
-  overflow-y: auto;
-  overflow-x: auto;
-  border-radius: 16px;
-}
-
-/* Adjust table wrapper for scrolling */
+/* Table wrapper with scrollable container */
 .table-wrapper {
-  overflow-x: auto;
   border-radius: 16px;
   background: #FFFFFF;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   border: 1px solid #000000;
+  overflow: hidden;
 }
 
-/* Ensure header section doesn't have gaps */
-.sticky-header-section .header {
-  margin-bottom: 0.5rem;
+.table-scroll-container {
+  max-height: calc(100vh - 320px);
+  overflow-y: auto;
+  overflow-x: auto;
 }
 
-.sticky-header-section .tabs {
-  margin-bottom: 1rem;
+/* Keep table header sticky */
+.user-table thead {
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
-.sticky-header-section .controls {
-  margin-bottom: 0;
-  padding-bottom: 0;
-  border-bottom: none;
+.user-table th {
+  background: #FCFAF7;
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
-/* Adjust for mobile */
-@media (max-width: 768px) {
-  .scrollable-content {
-    max-height: calc(100vh - 350px);
-  }
-  
-  .sticky-header-section {
-    position: relative;
-  }
-}
-
-/* Custom scrollbar for scrollable content */
-.scrollable-content::-webkit-scrollbar {
+/* Custom scrollbar for table scroll container */
+.table-scroll-container::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 
-.scrollable-content::-webkit-scrollbar-track {
+.table-scroll-container::-webkit-scrollbar-track {
   background: #F0EAE2;
   border-radius: 4px;
 }
 
-.scrollable-content::-webkit-scrollbar-thumb {
+.table-scroll-container::-webkit-scrollbar-thumb {
   background: #CBB38F;
   border-radius: 4px;
 }
 
-.scrollable-content::-webkit-scrollbar-thumb:hover {
+.table-scroll-container::-webkit-scrollbar-thumb:hover {
   background: #B89A6E;
+}
+
+/* Adjust for mobile */
+@media (max-width: 768px) {
+  .table-scroll-container {
+    max-height: calc(100vh - 380px);
+  }
 }
