@@ -236,3 +236,81 @@ input::placeholder {
     font-size: 1.25rem;
   }
 }
+/* Add these styles to userinput.css */
+
+/* Auto-fill hint */
+.auto-fill-hint {
+  font-size: 0.65rem;
+  font-weight: normal;
+  color: #B89A6E;
+  margin-left: 0.5rem;
+  text-transform: none;
+}
+
+/* Suggestions dropdown */
+.suggestions-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: #FFFFFF;
+  border: 1.5px solid #E8E0D4;
+  border-radius: 10px;
+  margin-top: 4px;
+  max-height: 250px;
+  overflow-y: auto;
+  z-index: 1000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.suggestion-item {
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  border-bottom: 1px solid #F0EAE2;
+  transition: all 0.2s ease;
+}
+
+.suggestion-item:last-child {
+  border-bottom: none;
+}
+
+.suggestion-item:hover {
+  background: #FCFAF7;
+}
+
+.suggestion-name {
+  font-weight: 600;
+  color: #1E1A17;
+  font-size: 0.85rem;
+  margin-bottom: 0.25rem;
+}
+
+.suggestion-details {
+  font-size: 0.7rem;
+  color: #6B5A45;
+}
+
+/* Form group relative positioning for dropdown */
+.form-group {
+  position: relative;
+  margin-bottom: 1rem;
+}
+
+/* Responsive adjustments for suggestions */
+@media (max-width: 560px) {
+  .suggestions-dropdown {
+    max-height: 200px;
+  }
+  
+  .suggestion-item {
+    padding: 0.6rem 0.8rem;
+  }
+  
+  .suggestion-name {
+    font-size: 0.8rem;
+  }
+  
+  .suggestion-details {
+    font-size: 0.65rem;
+  }
+}
