@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import '../styles/userinput.css';
@@ -21,7 +21,10 @@ const UserInput = () => {
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [allMembers, setAllMembers] = useState([]);
-  const [isCheckingName, setIsCheckingName] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState(-1);
+  
+  const fullNameInputRef = useRef(null);
+  const suggestionsRef = useRef(null);
 
   // Fetch all CKF members on component mount
   useEffect(() => {
@@ -40,11 +43,12 @@ const UserInput = () => {
   const handleNameChange = (e) => {
     const { value } = e.target;
     setFormData(prev => ({ ...prev, fullName: value }));
+    setSelectedIndex(-1);
     
     if (value.trim().length > 2) {
       const matches = allMembers.filter(member => 
         member.fullName.toLowerCase().includes(value.toLowerCase())
-      ).slice(0, 5); // Limit to 5 suggestions
+      ).slice(0, 8); // Limit to 8 suggestions
       
       setSuggestions(matches);
       setShowSuggestions(matches.length > 0);
@@ -53,6 +57,57 @@ const UserInput = () => {
       setShowSuggestions(false);
     }
   };
+
+  // Handle keyboard navigation
+  const handleKeyDown = (e) => {
+    if (!showSuggestions || suggestions.length === 0) return;
+
+    switch (e.key) {
+      case 'ArrowDown':
+        e.preventDefault();
+        setSelectedIndex(prev => 
+          prev < suggestions.length - 1 ? prev + 1 : prev
+        );
+        break;
+      
+      case 'ArrowUp':
+        e.preventDefault();
+        setSelectedIndex(prev => prev > 0 ? prev - 1 : -1);
+        break;
+      
+      case 'Enter':
+        e.preventDefault();
+        if (selectedIndex >= 0 && selectedIndex < suggestions.length) {
+          handleSelectSuggestion(suggestions[selectedIndex]);
+        }
+        break;
+      
+      case 'Escape':
+        e.preventDefault();
+        setShowSuggestions(false);
+        setSelectedIndex(-1);
+        break;
+      
+      case 'Tab':
+        // Close suggestions when tabbing away
+        setShowSuggestions(false);
+        setSelectedIndex(-1);
+        break;
+      
+      default:
+        break;
+    }
+  };
+
+  // Scroll selected item into view
+  useEffect(() => {
+    if (selectedIndex >= 0 && suggestionsRef.current) {
+      const selectedElement = suggestionsRef.current.children[selectedIndex];
+      if (selectedElement) {
+        selectedElement.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      }
+    }
+  }, [selectedIndex]);
 
   // Auto-fill form when a suggestion is selected
   const handleSelectSuggestion = (member) => {
@@ -66,6 +121,13 @@ const UserInput = () => {
     });
     setShowSuggestions(false);
     setSuggestions([]);
+    setSelectedIndex(-1);
+    
+    // Move focus to the next field after selection
+    setTimeout(() => {
+      const genderSelect = document.querySelector('select[name="gender"]');
+      if (genderSelect) genderSelect.focus();
+    }, 0);
   };
 
   const handleChange = (e) => {
@@ -98,6 +160,21 @@ const UserInput = () => {
     }
   };
 
+  // Close suggestions when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (fullNameInputRef.current && !fullNameInputRef.current.contains(event.target)) {
+        setShowSuggestions(false);
+        setSelectedIndex(-1);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   return (
     <div className="user-input-container">
       <div className="header">
@@ -109,31 +186,43 @@ const UserInput = () => {
         {error && <div className="error-message">{error}</div>}
 
         <form onSubmit={handleSubmit}>
-          <div className="form-group" style={{ position: 'relative' }}>
-            <label>Full Name <span className="auto-fill-hint">(Auto-fill available)</span></label>
+          <div className="form-group" style={{ position: 'relative' }} ref={fullNameInputRef}>
+            <label>Full Name <span className="auto-fill-hint">(Start typing to see suggestions)</span></label>
             <input
               type="text"
               name="fullName"
               value={formData.fullName}
               onChange={handleNameChange}
-              placeholder="Start typing to see suggestions..."
+              onKeyDown={handleKeyDown}
+              placeholder="Type name or use arrow keys to navigate..."
               required
               autoComplete="off"
+              className="full-name-input"
             />
             {showSuggestions && suggestions.length > 0 && (
-              <div className="suggestions-dropdown">
-                {suggestions.map((member) => (
+              <div className="suggestions-dropdown" ref={suggestionsRef}>
+                {suggestions.map((member, index) => (
                   <div
                     key={member._id}
-                    className="suggestion-item"
+                    className={`suggestion-item ${index === selectedIndex ? 'selected' : ''}`}
                     onClick={() => handleSelectSuggestion(member)}
+                    onMouseEnter={() => setSelectedIndex(index)}
                   >
                     <div className="suggestion-name">{member.fullName}</div>
                     <div className="suggestion-details">
-                      {member.cellgroupLeader} • {member.age} yrs
+                      <span className="suggestion-leader">{member.cellgroupLeader}</span>
+                      <span className="suggestion-separator">•</span>
+                      <span className="suggestion-age">{member.age} yrs</span>
+                      <span className="suggestion-separator">•</span>
+                      <span className="suggestion-gender">{member.gender}</span>
                     </div>
                   </div>
                 ))}
+                <div className="suggestion-footer">
+                  <span className="keyboard-hint">
+                    ↑↓ to navigate • Enter to select • Esc to close
+                  </span>
+                </div>
               </div>
             )}
           </div>
@@ -146,6 +235,7 @@ const UserInput = () => {
                 value={formData.gender}
                 onChange={handleChange}
                 required
+                className="form-select"
               >
                 <option value="">Select gender</option>
                 <option value="Male">Male</option>
@@ -162,6 +252,7 @@ const UserInput = () => {
                 onChange={handleChange}
                 placeholder="Enter age"
                 required
+                className="form-input"
               />
             </div>
           </div>
@@ -175,6 +266,7 @@ const UserInput = () => {
               onChange={handleChange}
               placeholder="Enter complete address"
               required
+              className="form-input"
             />
           </div>
 
@@ -188,6 +280,7 @@ const UserInput = () => {
                 onChange={handleChange}
                 placeholder="Enter contact number"
                 required
+                className="form-input"
               />
             </div>
 
@@ -200,6 +293,7 @@ const UserInput = () => {
                 onChange={handleChange}
                 placeholder="Enter cellgroup leader name"
                 required
+                className="form-input"
               />
             </div>
           </div>

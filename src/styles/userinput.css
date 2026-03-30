@@ -72,6 +72,7 @@ body {
 }
 
 .form-group {
+  position: relative;
   margin-bottom: 1rem;
 }
 
@@ -89,7 +90,19 @@ label {
   text-transform: uppercase;
 }
 
-input, select {
+/* Auto-fill hint */
+.auto-fill-hint {
+  font-size: 0.65rem;
+  font-weight: normal;
+  color: #B89A6E;
+  margin-left: 0.5rem;
+  text-transform: none;
+}
+
+/* Form inputs */
+.form-input, 
+.form-select,
+.full-name-input {
   width: 100%;
   padding: 0.6rem 0.8rem;
   font-size: 0.85rem;
@@ -101,19 +114,113 @@ input, select {
   transition: all 0.2s ease;
 }
 
-input:focus, select:focus {
+.form-input:focus, 
+.form-select:focus,
+.full-name-input:focus {
   outline: none;
   border-color: #CBB38F;
   box-shadow: 0 0 0 3px rgba(203, 179, 143, 0.1);
 }
 
-input:hover, select:hover {
+.form-input:hover, 
+.form-select:hover,
+.full-name-input:hover {
   border-color: #B89A6E;
 }
 
-input::placeholder {
+.form-input::placeholder,
+.full-name-input::placeholder {
   color: #C7BCA8;
   font-size: 0.8rem;
+}
+
+/* Suggestions dropdown */
+.suggestions-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: #FFFFFF;
+  border: 1.5px solid #E8E0D4;
+  border-radius: 10px;
+  margin-top: 4px;
+  max-height: 320px;
+  overflow-y: auto;
+  z-index: 1000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  animation: slideDown 0.2s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.suggestion-item {
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  border-bottom: 1px solid #F0EAE2;
+  transition: all 0.2s ease;
+}
+
+.suggestion-item:last-child {
+  border-bottom: none;
+}
+
+.suggestion-item:hover,
+.suggestion-item.selected {
+  background: linear-gradient(135deg, #FCFAF7 0%, #F8F5F0 100%);
+  border-left: 3px solid #CBB38F;
+  padding-left: calc(1rem - 3px);
+}
+
+.suggestion-name {
+  font-weight: 600;
+  color: #1E1A17;
+  font-size: 0.85rem;
+  margin-bottom: 0.25rem;
+}
+
+.suggestion-details {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.7rem;
+  color: #6B5A45;
+  flex-wrap: wrap;
+}
+
+.suggestion-leader,
+.suggestion-age,
+.suggestion-gender {
+  display: inline-flex;
+  align-items: center;
+}
+
+.suggestion-separator {
+  color: #D4C8B8;
+  font-size: 0.6rem;
+}
+
+.suggestion-footer {
+  padding: 0.5rem 1rem;
+  background: #FCFAF7;
+  border-top: 1px solid #E8E0D4;
+  font-size: 0.65rem;
+  color: #6B5A45;
+  text-align: center;
+}
+
+.keyboard-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
 }
 
 /* ===== BUTTONS ===== */
@@ -201,6 +308,25 @@ input::placeholder {
   font-weight: 500;
 }
 
+/* ===== SCROLLBAR STYLING ===== */
+.suggestions-dropdown::-webkit-scrollbar {
+  width: 6px;
+}
+
+.suggestions-dropdown::-webkit-scrollbar-track {
+  background: #F0EAE2;
+  border-radius: 3px;
+}
+
+.suggestions-dropdown::-webkit-scrollbar-thumb {
+  background: #CBB38F;
+  border-radius: 3px;
+}
+
+.suggestions-dropdown::-webkit-scrollbar-thumb:hover {
+  background: #B89A6E;
+}
+
 /* ===== RESPONSIVE ===== */
 @media (max-width: 560px) {
   .user-input-container {
@@ -235,71 +361,9 @@ input::placeholder {
   .title {
     font-size: 1.25rem;
   }
-}
-/* Add these styles to userinput.css */
 
-/* Auto-fill hint */
-.auto-fill-hint {
-  font-size: 0.65rem;
-  font-weight: normal;
-  color: #B89A6E;
-  margin-left: 0.5rem;
-  text-transform: none;
-}
-
-/* Suggestions dropdown */
-.suggestions-dropdown {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
-  background: #FFFFFF;
-  border: 1.5px solid #E8E0D4;
-  border-radius: 10px;
-  margin-top: 4px;
-  max-height: 250px;
-  overflow-y: auto;
-  z-index: 1000;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.suggestion-item {
-  padding: 0.75rem 1rem;
-  cursor: pointer;
-  border-bottom: 1px solid #F0EAE2;
-  transition: all 0.2s ease;
-}
-
-.suggestion-item:last-child {
-  border-bottom: none;
-}
-
-.suggestion-item:hover {
-  background: #FCFAF7;
-}
-
-.suggestion-name {
-  font-weight: 600;
-  color: #1E1A17;
-  font-size: 0.85rem;
-  margin-bottom: 0.25rem;
-}
-
-.suggestion-details {
-  font-size: 0.7rem;
-  color: #6B5A45;
-}
-
-/* Form group relative positioning for dropdown */
-.form-group {
-  position: relative;
-  margin-bottom: 1rem;
-}
-
-/* Responsive adjustments for suggestions */
-@media (max-width: 560px) {
   .suggestions-dropdown {
-    max-height: 200px;
+    max-height: 250px;
   }
   
   .suggestion-item {
@@ -312,5 +376,9 @@ input::placeholder {
   
   .suggestion-details {
     font-size: 0.65rem;
+  }
+  
+  .suggestion-footer {
+    font-size: 0.6rem;
   }
 }
