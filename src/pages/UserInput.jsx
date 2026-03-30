@@ -18,6 +18,7 @@ const UserInput = () => {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [allMembers, setAllMembers] = useState([]);
@@ -133,12 +134,15 @@ const UserInput = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+    // Clear success message when user starts typing again
+    if (success) setSuccess('');
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError('');
+    setSuccess('');
 
     // Validate required fields
     if (!formData.fullName.trim()) {
@@ -152,7 +156,25 @@ const UserInput = () => {
         ...formData,
         age: parseInt(formData.age, 10),
       });
-      navigate('/');
+      
+      // Show success message
+      setSuccess(`✓ Attendance for ${formData.fullName} has been successfully added!`);
+      
+      // Reset form after successful submission
+      setFormData({
+        fullName: '',
+        gender: '',
+        age: '',
+        address: '',
+        contactNo: '',
+        cellgroupLeader: '',
+      });
+      
+      // Clear success message after 3 seconds
+      setTimeout(() => {
+        setSuccess('');
+      }, 3000);
+      
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to create user');
     } finally {
@@ -184,6 +206,7 @@ const UserInput = () => {
 
       <div className="form-card">
         {error && <div className="error-message">{error}</div>}
+        {success && <div className="success-message">{success}</div>}
 
         <form onSubmit={handleSubmit}>
           <div className="form-group" style={{ position: 'relative' }} ref={fullNameInputRef}>

@@ -494,7 +494,7 @@ const UserLists = () => {
         <>
           <div className="controls">
             <Link to="/add" className="add-button">
-              Add New Member
+              Attendace
             </Link>
 
             <div className="filter-group">

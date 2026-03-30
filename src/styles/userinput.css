@@ -382,3 +382,27 @@ label {
     font-size: 0.6rem;
   }
 }
+
+/* Success Message */
+.success-message {
+  background: #E8F5E9;
+  color: #2E7D32;
+  padding: 0.6rem 0.8rem;
+  border-radius: 10px;
+  font-size: 0.75rem;
+  margin-bottom: 1rem;
+  border-left: 3px solid #2E7D32;
+  font-weight: 500;
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
