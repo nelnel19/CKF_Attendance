@@ -50,6 +50,15 @@ const UserLists = () => {
   const [memberSaving, setMemberSaving] = useState(false);
   const [memberEditError, setMemberEditError] = useState('');
 
+  // Age category function
+  const getAgeCategory = (age) => {
+    if (age >= 1 && age <= 12) return 'Kids';
+    if (age >= 13 && age <= 22) return 'Youth';
+    if (age >= 23 && age <= 39) return 'Young Adult';
+    if (age >= 40) return 'Adult';
+    return 'Unknown';
+  };
+
   const fetchUsers = async () => {
     setLoading(true);
     try {
@@ -81,12 +90,6 @@ const UserLists = () => {
     fetchUsers();
     fetchCkfMembers();
   }, []);
-
-  const getAgeCategory = (age) => {
-    if (age >= 1 && age <= 12) return 'Kids';
-    if (age >= 13 && age <= 22) return 'Youth';
-    return 'Young Professionals';
-  };
 
   // Filter attendance users by category and date
   const filteredUsers = users.filter(user => {
@@ -136,7 +139,8 @@ const UserLists = () => {
       byCategory: {
         Kids: 0,
         Youth: 0,
-        'Young Professionals': 0
+        'Young Adult': 0,
+        Adult: 0
       },
       byGender: {
         Male: 0,
@@ -145,7 +149,8 @@ const UserLists = () => {
       byCategoryAndGender: {
         Kids: { Male: 0, Female: 0 },
         Youth: { Male: 0, Female: 0 },
-        'Young Professionals': { Male: 0, Female: 0 }
+        'Young Adult': { Male: 0, Female: 0 },
+        Adult: { Male: 0, Female: 0 }
       }
     };
 
@@ -229,9 +234,10 @@ const UserLists = () => {
         [''],
         ['BY AGE CATEGORY'],
         ['Category', 'Count'],
-        ['Kids', summaryData.byCategory.Kids],
-        ['Youth', summaryData.byCategory.Youth],
-        ['Young Professionals', summaryData.byCategory['Young Professionals']],
+        ['Kids (1-12)', summaryData.byCategory.Kids],
+        ['Youth (13-22)', summaryData.byCategory.Youth],
+        ['Young Adult (23-39)', summaryData.byCategory['Young Adult']],
+        ['Adult (40+)', summaryData.byCategory.Adult],
         [''],
         ['BY GENDER'],
         ['Gender', 'Count'],
@@ -242,7 +248,8 @@ const UserLists = () => {
         ['Category', 'Male', 'Female', 'Total'],
         ['Kids', summaryData.byCategoryAndGender.Kids.Male, summaryData.byCategoryAndGender.Kids.Female, summaryData.byCategory.Kids],
         ['Youth', summaryData.byCategoryAndGender.Youth.Male, summaryData.byCategoryAndGender.Youth.Female, summaryData.byCategory.Youth],
-        ['Young Professionals', summaryData.byCategoryAndGender['Young Professionals'].Male, summaryData.byCategoryAndGender['Young Professionals'].Female, summaryData.byCategory['Young Professionals']],
+        ['Young Adult', summaryData.byCategoryAndGender['Young Adult'].Male, summaryData.byCategoryAndGender['Young Adult'].Female, summaryData.byCategory['Young Adult']],
+        ['Adult', summaryData.byCategoryAndGender.Adult.Male, summaryData.byCategoryAndGender.Adult.Female, summaryData.byCategory.Adult],
         [''],
         ['TOTAL', summaryData.byGender.Male, summaryData.byGender.Female, summaryData.total]
       ];
@@ -439,6 +446,7 @@ const UserLists = () => {
       'Full Name': member.fullName,
       'Gender': member.gender || '-',
       'Age': member.age,
+      'Age Category': getAgeCategory(member.age),
       'Address': member.address,
       'Contact No': member.contactNo,
       'Cellgroup Leader': member.cellgroupLeader,
@@ -494,7 +502,7 @@ const UserLists = () => {
         <>
           <div className="controls">
             <Link to="/add" className="add-button">
-              Attendace
+              Attendance
             </Link>
 
             <div className="filter-group">
@@ -508,7 +516,8 @@ const UserLists = () => {
                   <option value="all">All Categories</option>
                   <option value="Kids">Kids (1-12)</option>
                   <option value="Youth">Youth (13-22)</option>
-                  <option value="Young Professionals">Young Professionals (23+)</option>
+                  <option value="Young Adult">Young Adult (23-39)</option>
+                  <option value="Adult">Adult (40+)</option>
                 </select>
               </div>
 
@@ -564,7 +573,7 @@ const UserLists = () => {
                     <th>Cellgroup Leader</th>
                     <th>Date Added</th>
                     <th>Actions</th>
-                  </tr>
+                   </tr>
                 </thead>
                 <tbody>
                   {filteredUsers.map(user => (
@@ -596,7 +605,6 @@ const UserLists = () => {
           <div className="controls">
             <button 
               onClick={() => {
-                // You can add a modal to add new CKF members
                 alert('Add new CKF member functionality can be added here');
               }} 
               className="add-button"
@@ -672,13 +680,14 @@ const UserLists = () => {
                     <th>Full Name</th>
                     <th>Gender</th>
                     <th>Age</th>
+                    <th>Age Category</th>
                     <th>Address</th>
                     <th>Contact No</th>
                     <th>Cellgroup Leader</th>
                     <th>Status</th>
                     <th>Date Joined</th>
                     <th>Actions</th>
-                  </tr>
+                   </tr>
                 </thead>
                 <tbody>
                   {filteredMembers.map(member => (
@@ -686,6 +695,7 @@ const UserLists = () => {
                       <td>{member.fullName}</td>
                       <td>{member.gender || '-'}</td>
                       <td>{member.age}</td>
+                      <td>{getAgeCategory(member.age)}</td>
                       <td>{member.address}</td>
                       <td>{member.contactNo}</td>
                       <td>{member.cellgroupLeader}</td>
@@ -729,16 +739,20 @@ const UserLists = () => {
                     <h3>By Age Category</h3>
                     <div className="summary-stats">
                       <div className="stat-card">
-                        <span className="stat-label">Kids</span>
+                        <span className="stat-label">Kids (1-12)</span>
                         <span className="stat-number">{summaryData.byCategory.Kids}</span>
                       </div>
                       <div className="stat-card">
-                        <span className="stat-label">Youth</span>
+                        <span className="stat-label">Youth (13-22)</span>
                         <span className="stat-number">{summaryData.byCategory.Youth}</span>
                       </div>
                       <div className="stat-card">
-                        <span className="stat-label">Young Professionals</span>
-                        <span className="stat-number">{summaryData.byCategory['Young Professionals']}</span>
+                        <span className="stat-label">Young Adult (23-39)</span>
+                        <span className="stat-number">{summaryData.byCategory['Young Adult']}</span>
+                      </div>
+                      <div className="stat-card">
+                        <span className="stat-label">Adult (40+)</span>
+                        <span className="stat-number">{summaryData.byCategory.Adult}</span>
                       </div>
                     </div>
                   </div>
@@ -766,26 +780,32 @@ const UserLists = () => {
                           <th>Male</th>
                           <th>Female</th>
                           <th>Total</th>
-                        </tr>
+                         </tr>
                       </thead>
                       <tbody>
                         <tr>
-                          <td>Kids</td>
+                          <td>Kids (1-12)</td>
                           <td>{summaryData.byCategoryAndGender.Kids.Male}</td>
                           <td>{summaryData.byCategoryAndGender.Kids.Female}</td>
                           <td>{summaryData.byCategory.Kids}</td>
                         </tr>
                         <tr>
-                          <td>Youth</td>
+                          <td>Youth (13-22)</td>
                           <td>{summaryData.byCategoryAndGender.Youth.Male}</td>
                           <td>{summaryData.byCategoryAndGender.Youth.Female}</td>
                           <td>{summaryData.byCategory.Youth}</td>
                         </tr>
                         <tr>
-                          <td>Young Professionals</td>
-                          <td>{summaryData.byCategoryAndGender['Young Professionals'].Male}</td>
-                          <td>{summaryData.byCategoryAndGender['Young Professionals'].Female}</td>
-                          <td>{summaryData.byCategory['Young Professionals']}</td>
+                          <td>Young Adult (23-39)</td>
+                          <td>{summaryData.byCategoryAndGender['Young Adult'].Male}</td>
+                          <td>{summaryData.byCategoryAndGender['Young Adult'].Female}</td>
+                          <td>{summaryData.byCategory['Young Adult']}</td>
+                        </tr>
+                        <tr>
+                          <td>Adult (40+)</td>
+                          <td>{summaryData.byCategoryAndGender.Adult.Male}</td>
+                          <td>{summaryData.byCategoryAndGender.Adult.Female}</td>
+                          <td>{summaryData.byCategory.Adult}</td>
                         </tr>
                         <tr className="summary-total">
                           <td><strong>TOTAL</strong></td>

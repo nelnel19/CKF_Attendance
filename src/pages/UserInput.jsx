@@ -27,6 +27,15 @@ const UserInput = () => {
   const fullNameInputRef = useRef(null);
   const suggestionsRef = useRef(null);
 
+  // Age category function
+  const getAgeCategory = (age) => {
+    if (age >= 1 && age <= 12) return 'Kids';
+    if (age >= 13 && age <= 22) return 'Youth';
+    if (age >= 23 && age <= 39) return 'Young Adult';
+    if (age >= 40) return 'Adult';
+    return 'Unknown';
+  };
+
   // Fetch all CKF members on component mount
   useEffect(() => {
     const fetchMembers = async () => {
@@ -323,7 +332,7 @@ const UserInput = () => {
 
           <div className="button-group">
             <button type="submit" className="btn-primary" disabled={loading}>
-              {loading ? 'Adding...' : 'Add Attendace'}
+              {loading ? 'Adding...' : 'Add Attendance'}
             </button>
             <button type="button" className="btn-secondary" onClick={() => navigate('/')}>
               Cancel
