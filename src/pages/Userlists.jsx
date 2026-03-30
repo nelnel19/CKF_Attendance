@@ -5,17 +5,23 @@ import * as XLSX from 'xlsx';
 import '../styles/userlists.css';
 
 const API_URL = 'https://ckf-attendance-backend.onrender.com/api/users';
+const CKF_MEMBERS_URL = 'https://ckf-attendance-backend.onrender.com/api/ckf-members';
 
 const UserLists = () => {
+  const [activeTab, setActiveTab] = useState('attendance'); // 'attendance' or 'members'
   const [users, setUsers] = useState([]);
+  const [ckfMembers, setCkfMembers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [membersLoading, setMembersLoading] = useState(true);
   const [error, setError] = useState('');
+  const [membersError, setMembersError] = useState('');
   const [filterCategory, setFilterCategory] = useState('all');
   const [filterDate, setFilterDate] = useState('');
   const [showSummaryModal, setShowSummaryModal] = useState(false);
   const [summaryData, setSummaryData] = useState(null);
+  const [summaryType, setSummaryType] = useState('attendance');
 
-  // Modal state
+  // Modal state for attendance users
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
   const [editFormData, setEditFormData] = useState({
@@ -28,6 +34,21 @@ const UserLists = () => {
   });
   const [saving, setSaving] = useState(false);
   const [editError, setEditError] = useState('');
+
+  // Modal state for CKF members
+  const [isMemberModalOpen, setIsMemberModalOpen] = useState(false);
+  const [editingMember, setEditingMember] = useState(null);
+  const [memberFormData, setMemberFormData] = useState({
+    fullName: '',
+    gender: '',
+    age: '',
+    address: '',
+    contactNo: '',
+    cellgroupLeader: '',
+    status: 'Active'
+  });
+  const [memberSaving, setMemberSaving] = useState(false);
+  const [memberEditError, setMemberEditError] = useState('');
 
   const fetchUsers = async () => {
     setLoading(true);
@@ -43,8 +64,22 @@ const UserLists = () => {
     }
   };
 
+  const fetchCkfMembers = async () => {
+    setMembersLoading(true);
+    try {
+      const response = await axios.get(CKF_MEMBERS_URL);
+      setCkfMembers(response.data.data);
+      setMembersError('');
+    } catch (err) {
+      setMembersError(err.response?.data?.message || 'Failed to fetch CKF members');
+    } finally {
+      setMembersLoading(false);
+    }
+  };
+
   useEffect(() => {
     fetchUsers();
+    fetchCkfMembers();
   }, []);
 
   const getAgeCategory = (age) => {
@@ -53,7 +88,7 @@ const UserLists = () => {
     return 'Young Professionals';
   };
 
-  // Filter users by category and date
+  // Filter attendance users by category and date
   const filteredUsers = users.filter(user => {
     let matchCategory = true;
     let matchDate = true;
@@ -70,8 +105,30 @@ const UserLists = () => {
     return matchCategory && matchDate;
   });
 
-  // Generate summary data
+  // Filter CKF members by status and search
+  const [memberFilterStatus, setMemberFilterStatus] = useState('all');
+  const [memberSearch, setMemberSearch] = useState('');
+
+  const filteredMembers = ckfMembers.filter(member => {
+    let matchStatus = true;
+    let matchSearch = true;
+
+    if (memberFilterStatus !== 'all') {
+      matchStatus = member.status === memberFilterStatus;
+    }
+
+    if (memberSearch) {
+      matchSearch = member.fullName.toLowerCase().includes(memberSearch.toLowerCase()) ||
+                   member.address.toLowerCase().includes(memberSearch.toLowerCase()) ||
+                   member.cellgroupLeader.toLowerCase().includes(memberSearch.toLowerCase());
+    }
+
+    return matchStatus && matchSearch;
+  });
+
+  // Generate summary data for attendance
   const generateSummary = () => {
+    setSummaryType('attendance');
     const usersToSummarize = filterDate ? filteredUsers : users;
     
     const summary = {
@@ -96,18 +153,55 @@ const UserLists = () => {
       const category = getAgeCategory(user.age);
       const gender = user.gender || 'Other';
       
-      // Count by category
       summary.byCategory[category]++;
       
-      // Count by gender
       if (gender === 'Male' || gender === 'Female') {
         summary.byGender[gender]++;
       }
       
-      // Count by category and gender
       if (summary.byCategoryAndGender[category] && (gender === 'Male' || gender === 'Female')) {
         summary.byCategoryAndGender[category][gender]++;
       }
+    });
+
+    setSummaryData(summary);
+    setShowSummaryModal(true);
+  };
+
+  // Generate summary for CKF members
+  const generateCkfSummary = () => {
+    setSummaryType('members');
+    const summary = {
+      total: ckfMembers.length,
+      byGender: {
+        Male: 0,
+        Female: 0
+      },
+      byStatus: {
+        Active: 0,
+        Inactive: 0,
+        Pending: 0
+      },
+      byCellgroup: {}
+    };
+
+    ckfMembers.forEach(member => {
+      // Count by gender
+      if (member.gender === 'Male' || member.gender === 'Female') {
+        summary.byGender[member.gender]++;
+      }
+      
+      // Count by status
+      if (member.status) {
+        summary.byStatus[member.status]++;
+      }
+      
+      // Count by cellgroup leader
+      const leader = member.cellgroupLeader || 'Unassigned';
+      if (!summary.byCellgroup[leader]) {
+        summary.byCellgroup[leader] = 0;
+      }
+      summary.byCellgroup[leader]++;
     });
 
     setSummaryData(summary);
@@ -119,51 +213,95 @@ const UserLists = () => {
     if (!summaryData) return;
 
     const currentDate = new Date().toLocaleDateString();
-    const reportDate = filterDate || 'All Time';
-
-    const summaryRows = [
-      ['CKF ATTENDANCE SUMMARY REPORT'],
-      [''],
-      [`Report Date: ${reportDate}`],
-      [`Generated: ${currentDate}`],
-      [''],
-      ['OVERALL STATISTICS'],
-      ['Total Members', summaryData.total],
-      [''],
-      ['BY AGE CATEGORY'],
-      ['Category', 'Count'],
-      ['Kids', summaryData.byCategory.Kids],
-      ['Youth', summaryData.byCategory.Youth],
-      ['Young Professionals', summaryData.byCategory['Young Professionals']],
-      [''],
-      ['BY GENDER'],
-      ['Gender', 'Count'],
-      ['Male', summaryData.byGender.Male],
-      ['Female', summaryData.byGender.Female],
-      [''],
-      ['DETAILED BREAKDOWN BY CATEGORY & GENDER'],
-      ['Category', 'Male', 'Female', 'Total'],
-      ['Kids', summaryData.byCategoryAndGender.Kids.Male, summaryData.byCategoryAndGender.Kids.Female, summaryData.byCategory.Kids],
-      ['Youth', summaryData.byCategoryAndGender.Youth.Male, summaryData.byCategoryAndGender.Youth.Female, summaryData.byCategory.Youth],
-      ['Young Professionals', summaryData.byCategoryAndGender['Young Professionals'].Male, summaryData.byCategoryAndGender['Young Professionals'].Female, summaryData.byCategory['Young Professionals']],
-      [''],
-      ['TOTAL', summaryData.byGender.Male, summaryData.byGender.Female, summaryData.total]
-    ];
+    
+    let summaryRows = [];
+    
+    if (summaryType === 'attendance') {
+      const reportDate = filterDate || 'All Time';
+      summaryRows = [
+        ['CKF ATTENDANCE SUMMARY REPORT'],
+        [''],
+        [`Report Date: ${reportDate}`],
+        [`Generated: ${currentDate}`],
+        [''],
+        ['OVERALL STATISTICS'],
+        ['Total Members', summaryData.total],
+        [''],
+        ['BY AGE CATEGORY'],
+        ['Category', 'Count'],
+        ['Kids', summaryData.byCategory.Kids],
+        ['Youth', summaryData.byCategory.Youth],
+        ['Young Professionals', summaryData.byCategory['Young Professionals']],
+        [''],
+        ['BY GENDER'],
+        ['Gender', 'Count'],
+        ['Male', summaryData.byGender.Male],
+        ['Female', summaryData.byGender.Female],
+        [''],
+        ['DETAILED BREAKDOWN BY CATEGORY & GENDER'],
+        ['Category', 'Male', 'Female', 'Total'],
+        ['Kids', summaryData.byCategoryAndGender.Kids.Male, summaryData.byCategoryAndGender.Kids.Female, summaryData.byCategory.Kids],
+        ['Youth', summaryData.byCategoryAndGender.Youth.Male, summaryData.byCategoryAndGender.Youth.Female, summaryData.byCategory.Youth],
+        ['Young Professionals', summaryData.byCategoryAndGender['Young Professionals'].Male, summaryData.byCategoryAndGender['Young Professionals'].Female, summaryData.byCategory['Young Professionals']],
+        [''],
+        ['TOTAL', summaryData.byGender.Male, summaryData.byGender.Female, summaryData.total]
+      ];
+    } else {
+      summaryRows = [
+        ['CKF MEMBERS DIRECTORY REPORT'],
+        [''],
+        [`Generated: ${currentDate}`],
+        [''],
+        ['OVERALL STATISTICS'],
+        ['Total Members', summaryData.total],
+        [''],
+        ['BY GENDER'],
+        ['Gender', 'Count'],
+        ['Male', summaryData.byGender.Male],
+        ['Female', summaryData.byGender.Female],
+        [''],
+        ['BY STATUS'],
+        ['Status', 'Count'],
+        ['Active', summaryData.byStatus.Active],
+        ['Inactive', summaryData.byStatus.Inactive],
+        ['Pending', summaryData.byStatus.Pending],
+        [''],
+        ['BY CELLGROUP LEADER'],
+        ['Cellgroup Leader', 'Count']
+      ];
+      
+      // Add cellgroup breakdown
+      Object.entries(summaryData.byCellgroup).forEach(([leader, count]) => {
+        summaryRows.push([leader, count]);
+      });
+      
+      summaryRows.push([''], ['TOTAL', summaryData.total]);
+    }
 
     const ws = XLSX.utils.aoa_to_sheet(summaryRows);
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'CKF_Summary');
-    const fileName = `CKF_Summary_${reportDate.replace(/\//g, '-')}_${currentDate.replace(/\//g, '-')}.xlsx`;
+    const sheetName = summaryType === 'attendance' ? 'CKF_Attendance_Summary' : 'CKF_Members_Directory';
+    XLSX.utils.book_append_sheet(wb, ws, sheetName);
+    const fileName = `${sheetName}_${currentDate.replace(/\//g, '-')}.xlsx`;
     XLSX.writeFile(wb, fileName);
   };
 
-  const handleDelete = async (id, fullName) => {
+  const handleDelete = async (id, fullName, type = 'attendance') => {
     if (window.confirm(`Are you sure you want to delete ${fullName}?`)) {
       try {
-        await axios.delete(`${API_URL}/${id}`);
-        fetchUsers();
+        if (type === 'attendance') {
+          await axios.delete(`${API_URL}/${id}`);
+          fetchUsers();
+        } else {
+          await axios.delete(`${CKF_MEMBERS_URL}/${id}`);
+          fetchCkfMembers();
+        }
       } catch (err) {
-        setError(err.response?.data?.message || 'Failed to delete user');
+        if (type === 'attendance') {
+          setError(err.response?.data?.message || 'Failed to delete user');
+        } else {
+          setMembersError(err.response?.data?.message || 'Failed to delete member');
+        }
       }
     }
   };
@@ -182,6 +320,21 @@ const UserLists = () => {
     setIsModalOpen(true);
   };
 
+  const openEditMemberModal = (member) => {
+    setEditingMember(member);
+    setMemberFormData({
+      fullName: member.fullName,
+      gender: member.gender || '',
+      age: member.age,
+      address: member.address,
+      contactNo: member.contactNo,
+      cellgroupLeader: member.cellgroupLeader,
+      status: member.status || 'Active'
+    });
+    setMemberEditError('');
+    setIsMemberModalOpen(true);
+  };
+
   const closeModal = () => {
     setIsModalOpen(false);
     setEditingUser(null);
@@ -196,9 +349,29 @@ const UserLists = () => {
     setEditError('');
   };
 
+  const closeMemberModal = () => {
+    setIsMemberModalOpen(false);
+    setEditingMember(null);
+    setMemberFormData({
+      fullName: '',
+      gender: '',
+      age: '',
+      address: '',
+      contactNo: '',
+      cellgroupLeader: '',
+      status: 'Active'
+    });
+    setMemberEditError('');
+  };
+
   const handleEditChange = (e) => {
     const { name, value } = e.target;
     setEditFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleMemberEditChange = (e) => {
+    const { name, value } = e.target;
+    setMemberFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleEditSubmit = async (e) => {
@@ -220,7 +393,26 @@ const UserLists = () => {
     }
   };
 
-  // Export to Excel
+  const handleMemberEditSubmit = async (e) => {
+    e.preventDefault();
+    setMemberSaving(true);
+    setMemberEditError('');
+
+    try {
+      await axios.put(`${CKF_MEMBERS_URL}/${editingMember._id}`, {
+        ...memberFormData,
+        age: parseInt(memberFormData.age, 10),
+      });
+      closeMemberModal();
+      fetchCkfMembers();
+    } catch (err) {
+      setMemberEditError(err.response?.data?.message || 'Failed to update member');
+    } finally {
+      setMemberSaving(false);
+    }
+  };
+
+  // Export to Excel for attendance
   const exportToExcel = () => {
     const exportData = filteredUsers.map(user => ({
       'Full Name': user.fullName,
@@ -235,6 +427,27 @@ const UserLists = () => {
 
     const ws = XLSX.utils.json_to_sheet(exportData);
     const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'CKF_Attendance');
+    const date = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
+    const fileName = `CKF_Attendance_${date}.xlsx`;
+    XLSX.writeFile(wb, fileName);
+  };
+
+  // Export to Excel for CKF members
+  const exportCkfMembersToExcel = () => {
+    const exportData = filteredMembers.map(member => ({
+      'Full Name': member.fullName,
+      'Gender': member.gender || '-',
+      'Age': member.age,
+      'Address': member.address,
+      'Contact No': member.contactNo,
+      'Cellgroup Leader': member.cellgroupLeader,
+      'Status': member.status || 'Active',
+      'Date Joined': new Date(member.dateJoined).toLocaleDateString()
+    }));
+
+    const ws = XLSX.utils.json_to_sheet(exportData);
+    const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'CKF_Members');
     const date = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
     const fileName = `CKF_Members_${date}.xlsx`;
@@ -245,108 +458,254 @@ const UserLists = () => {
     setFilterDate('');
   };
 
-  if (loading) return <div className="loading">Loading users...</div>;
-  if (error) return <div className="error">{error}</div>;
+  const clearMemberFilters = () => {
+    setMemberFilterStatus('all');
+    setMemberSearch('');
+  };
+
+  if (loading && activeTab === 'attendance') return <div className="loading">Loading attendance records...</div>;
+  if (membersLoading && activeTab === 'members') return <div className="loading">Loading CKF members...</div>;
 
   return (
     <div className="user-list-container">
       <div className="header">
         <img src="/ckflogo.jpg" alt="CKF Logo" className="custom-logo-img" />
-        <h1 className="title">CKF Attendance</h1>
+        <h1 className="title">CKF Attendance System</h1>
       </div>
 
-      <div className="controls">
-        <Link to="/add" className="add-button">
-          Add New Member
-        </Link>
+      {/* Tabs */}
+      <div className="tabs">
+        <button
+          className={`tab-button ${activeTab === 'attendance' ? 'active' : ''}`}
+          onClick={() => setActiveTab('attendance')}
+        >
+          Attendance Records
+        </button>
+        <button
+          className={`tab-button ${activeTab === 'members' ? 'active' : ''}`}
+          onClick={() => setActiveTab('members')}
+        >
+          CKF Members Directory
+        </button>
+      </div>
 
-        <div className="filter-group">
-          <div className="filter">
-            <label htmlFor="categoryFilter">Age Category:</label>
-            <select
-              id="categoryFilter"
-              value={filterCategory}
-              onChange={(e) => setFilterCategory(e.target.value)}
-            >
-              <option value="all">All Categories</option>
-              <option value="Kids">Kids (1-12)</option>
-              <option value="Youth">Youth (13-22)</option>
-              <option value="Young Professionals">Young Professionals (23+)</option>
-            </select>
-          </div>
+      {/* Attendance Tab */}
+      {activeTab === 'attendance' && (
+        <>
+          <div className="controls">
+            <Link to="/add" className="add-button">
+              Add New Member
+            </Link>
 
-          <div className="filter-divider"></div>
+            <div className="filter-group">
+              <div className="filter">
+                <label htmlFor="categoryFilter">Age Category:</label>
+                <select
+                  id="categoryFilter"
+                  value={filterCategory}
+                  onChange={(e) => setFilterCategory(e.target.value)}
+                >
+                  <option value="all">All Categories</option>
+                  <option value="Kids">Kids (1-12)</option>
+                  <option value="Youth">Youth (13-22)</option>
+                  <option value="Young Professionals">Young Professionals (23+)</option>
+                </select>
+              </div>
 
-          <div className="filter">
-            <label htmlFor="dateFilter">Date Added:</label>
-            <input
-              type="date"
-              id="dateFilter"
-              value={filterDate}
-              onChange={(e) => setFilterDate(e.target.value)}
-              className="date-filter-input"
-            />
-            {filterDate && (
-              <button onClick={clearDateFilter} className="clear-date-btn" title="Clear date filter">
-                ×
+              <div className="filter-divider"></div>
+
+              <div className="filter">
+                <label htmlFor="dateFilter">Date Added:</label>
+                <input
+                  type="date"
+                  id="dateFilter"
+                  value={filterDate}
+                  onChange={(e) => setFilterDate(e.target.value)}
+                  className="date-filter-input"
+                />
+                {filterDate && (
+                  <button onClick={clearDateFilter} className="clear-date-btn" title="Clear date filter">
+                    ×
+                  </button>
+                )}
+              </div>
+
+              <button className="summary-btn" onClick={generateSummary}>
+                Generate Summary
               </button>
-            )}
+
+              {filteredUsers.length > 0 && (
+                <button className="export-btn" onClick={exportToExcel}>
+                  Export to Excel
+                </button>
+              )}
+            </div>
           </div>
 
-          <button className="summary-btn" onClick={generateSummary}>
-            Generate Summary
-          </button>
+          {error && <div className="error">{error}</div>}
 
-          {filteredUsers.length > 0 && (
-            <button className="export-btn" onClick={exportToExcel}>
-              Export to Excel
-            </button>
+          {filteredUsers.length === 0 ? (
+            <div className="empty-message">
+              {filterCategory === 'all' && !filterDate
+                ? 'No attendance records yet. Add your first member!'
+                : `No members found matching your filters.`}
+            </div>
+          ) : (
+            <div className="table-wrapper">
+              <table className="user-table">
+                <thead>
+                  <tr>
+                    <th>Full Name</th>
+                    <th>Gender</th>
+                    <th>Age</th>
+                    <th>Age Category</th>
+                    <th>Address</th>
+                    <th>Contact No</th>
+                    <th>Cellgroup Leader</th>
+                    <th>Date Added</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredUsers.map(user => (
+                    <tr key={user._id}>
+                      <td>{user.fullName}</td>
+                      <td>{user.gender || '-'}</td>
+                      <td>{user.age}</td>
+                      <td>{getAgeCategory(user.age)}</td>
+                      <td>{user.address}</td>
+                      <td>{user.contactNo}</td>
+                      <td>{user.cellgroupLeader}</td>
+                      <td>{new Date(user.createdAt).toLocaleDateString()}</td>
+                      <td className="actions">
+                        <button onClick={() => openEditModal(user)} className="edit-btn">Edit</button>
+                        <button onClick={() => handleDelete(user._id, user.fullName, 'attendance')} className="delete-btn">Delete</button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
-        </div>
-      </div>
+        </>
+      )}
 
-      {filteredUsers.length === 0 ? (
-        <div className="empty-message">
-          {filterCategory === 'all' && !filterDate
-            ? 'No members yet. Add your first member!'
-            : `No members found matching your filters.`}
-        </div>
-      ) : (
-        <div className="table-wrapper">
-          <table className="user-table">
-            <thead>
-              <tr>
-                <th>Full Name</th>
-                <th>Gender</th>
-                <th>Age</th>
-                <th>Age Category</th>
-                <th>Address</th>
-                <th>Contact No</th>
-                <th>Cellgroup Leader</th>
-                <th>Date Added</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredUsers.map(user => (
-                <tr key={user._id}>
-                  <td>{user.fullName}</td>
-                  <td>{user.gender || '-'}</td>
-                  <td>{user.age}</td>
-                  <td>{getAgeCategory(user.age)}</td>
-                  <td>{user.address}</td>
-                  <td>{user.contactNo}</td>
-                  <td>{user.cellgroupLeader}</td>
-                  <td>{new Date(user.createdAt).toLocaleDateString()}</td>
-                  <td className="actions">
-                    <button onClick={() => openEditModal(user)} className="edit-btn">Edit</button>
-                    <button onClick={() => handleDelete(user._id, user.fullName)} className="delete-btn">Delete</button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+      {/* CKF Members Directory Tab */}
+      {activeTab === 'members' && (
+        <>
+          <div className="controls">
+            <button 
+              onClick={() => {
+                // You can add a modal to add new CKF members
+                alert('Add new CKF member functionality can be added here');
+              }} 
+              className="add-button"
+            >
+              Add New Member
+            </button>
+
+            <div className="filter-group">
+              <div className="filter">
+                <label htmlFor="statusFilter">Status:</label>
+                <select
+                  id="statusFilter"
+                  value={memberFilterStatus}
+                  onChange={(e) => setMemberFilterStatus(e.target.value)}
+                >
+                  <option value="all">All Status</option>
+                  <option value="Active">Active</option>
+                  <option value="Inactive">Inactive</option>
+                  <option value="Pending">Pending</option>
+                </select>
+              </div>
+
+              <div className="filter-divider"></div>
+
+              <div className="filter">
+                <label htmlFor="searchFilter">Search:</label>
+                <input
+                  type="text"
+                  id="searchFilter"
+                  value={memberSearch}
+                  onChange={(e) => setMemberSearch(e.target.value)}
+                  placeholder="Name, address, or leader..."
+                  className="search-input"
+                />
+                {memberSearch && (
+                  <button onClick={() => setMemberSearch('')} className="clear-date-btn" title="Clear search">
+                    ×
+                  </button>
+                )}
+              </div>
+
+              {(memberFilterStatus !== 'all' || memberSearch) && (
+                <button onClick={clearMemberFilters} className="clear-filters-btn">
+                  Clear Filters
+                </button>
+              )}
+
+              <button className="summary-btn" onClick={generateCkfSummary}>
+                Generate Summary
+              </button>
+
+              {filteredMembers.length > 0 && (
+                <button className="export-btn" onClick={exportCkfMembersToExcel}>
+                  Export to Excel
+                </button>
+              )}
+            </div>
+          </div>
+
+          {membersError && <div className="error">{membersError}</div>}
+
+          {filteredMembers.length === 0 ? (
+            <div className="empty-message">
+              {memberSearch || memberFilterStatus !== 'all'
+                ? `No members found matching your filters.`
+                : 'No CKF members found in the database.'}
+            </div>
+          ) : (
+            <div className="table-wrapper">
+              <table className="user-table">
+                <thead>
+                  <tr>
+                    <th>Full Name</th>
+                    <th>Gender</th>
+                    <th>Age</th>
+                    <th>Address</th>
+                    <th>Contact No</th>
+                    <th>Cellgroup Leader</th>
+                    <th>Status</th>
+                    <th>Date Joined</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredMembers.map(member => (
+                    <tr key={member._id}>
+                      <td>{member.fullName}</td>
+                      <td>{member.gender || '-'}</td>
+                      <td>{member.age}</td>
+                      <td>{member.address}</td>
+                      <td>{member.contactNo}</td>
+                      <td>{member.cellgroupLeader}</td>
+                      <td>
+                        <span className={`status-badge status-${member.status?.toLowerCase() || 'active'}`}>
+                          {member.status || 'Active'}
+                        </span>
+                      </td>
+                      <td>{new Date(member.dateJoined).toLocaleDateString()}</td>
+                      <td className="actions">
+                        <button onClick={() => openEditMemberModal(member)} className="edit-btn">Edit</button>
+                        <button onClick={() => handleDelete(member._id, member.fullName, 'members')} className="delete-btn">Delete</button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </>
       )}
 
       {/* Summary Modal */}
@@ -354,88 +713,145 @@ const UserLists = () => {
         <div className="modal-overlay" onClick={() => setShowSummaryModal(false)}>
           <div className="summary-modal-content" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
-              <h2>Attendance Summary Report</h2>
+              <h2>{summaryType === 'attendance' ? 'Attendance Summary Report' : 'Members Directory Summary'}</h2>
               <button className="modal-close" onClick={() => setShowSummaryModal(false)}>&times;</button>
             </div>
             
             <div className="summary-body">
               <div className="summary-info">
-                <p><strong>Report Date:</strong> {filterDate || 'All Time'}</p>
                 <p><strong>Generated:</strong> {new Date().toLocaleDateString()}</p>
                 <p><strong>Total Members:</strong> {summaryData.total}</p>
               </div>
 
-              <div className="summary-section">
-                <h3>By Age Category</h3>
-                <div className="summary-stats">
-                  <div className="stat-card">
-                    <span className="stat-label">Kids</span>
-                    <span className="stat-number">{summaryData.byCategory.Kids}</span>
+              {summaryType === 'attendance' ? (
+                <>
+                  <div className="summary-section">
+                    <h3>By Age Category</h3>
+                    <div className="summary-stats">
+                      <div className="stat-card">
+                        <span className="stat-label">Kids</span>
+                        <span className="stat-number">{summaryData.byCategory.Kids}</span>
+                      </div>
+                      <div className="stat-card">
+                        <span className="stat-label">Youth</span>
+                        <span className="stat-number">{summaryData.byCategory.Youth}</span>
+                      </div>
+                      <div className="stat-card">
+                        <span className="stat-label">Young Professionals</span>
+                        <span className="stat-number">{summaryData.byCategory['Young Professionals']}</span>
+                      </div>
+                    </div>
                   </div>
-                  <div className="stat-card">
-                    <span className="stat-label">Youth</span>
-                    <span className="stat-number">{summaryData.byCategory.Youth}</span>
-                  </div>
-                  <div className="stat-card">
-                    <span className="stat-label">Young Professionals</span>
-                    <span className="stat-number">{summaryData.byCategory['Young Professionals']}</span>
-                  </div>
-                </div>
-              </div>
 
-              <div className="summary-section">
-                <h3>By Gender</h3>
-                <div className="summary-stats">
-                  <div className="stat-card">
-                    <span className="stat-label">Male</span>
-                    <span className="stat-number">{summaryData.byGender.Male}</span>
+                  <div className="summary-section">
+                    <h3>By Gender</h3>
+                    <div className="summary-stats">
+                      <div className="stat-card">
+                        <span className="stat-label">Male</span>
+                        <span className="stat-number">{summaryData.byGender.Male}</span>
+                      </div>
+                      <div className="stat-card">
+                        <span className="stat-label">Female</span>
+                        <span className="stat-number">{summaryData.byGender.Female}</span>
+                      </div>
+                    </div>
                   </div>
-                  <div className="stat-card">
-                    <span className="stat-label">Female</span>
-                    <span className="stat-number">{summaryData.byGender.Female}</span>
-                  </div>
-                </div>
-              </div>
 
-              <div className="summary-section">
-                <h3>Detailed Breakdown</h3>
-                <table className="summary-table">
-                  <thead>
-                    <tr>
-                      <th>Category</th>
-                      <th>Male</th>
-                      <th>Female</th>
-                      <th>Total</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>Kids</td>
-                      <td>{summaryData.byCategoryAndGender.Kids.Male}</td>
-                      <td>{summaryData.byCategoryAndGender.Kids.Female}</td>
-                      <td>{summaryData.byCategory.Kids}</td>
-                    </tr>
-                    <tr>
-                      <td>Youth</td>
-                      <td>{summaryData.byCategoryAndGender.Youth.Male}</td>
-                      <td>{summaryData.byCategoryAndGender.Youth.Female}</td>
-                      <td>{summaryData.byCategory.Youth}</td>
-                    </tr>
-                    <tr>
-                      <td>Young Professionals</td>
-                      <td>{summaryData.byCategoryAndGender['Young Professionals'].Male}</td>
-                      <td>{summaryData.byCategoryAndGender['Young Professionals'].Female}</td>
-                      <td>{summaryData.byCategory['Young Professionals']}</td>
-                    </tr>
-                    <tr className="summary-total">
-                      <td><strong>TOTAL</strong></td>
-                      <td><strong>{summaryData.byGender.Male}</strong></td>
-                      <td><strong>{summaryData.byGender.Female}</strong></td>
-                      <td><strong>{summaryData.total}</strong></td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
+                  <div className="summary-section">
+                    <h3>Detailed Breakdown</h3>
+                    <table className="summary-table">
+                      <thead>
+                        <tr>
+                          <th>Category</th>
+                          <th>Male</th>
+                          <th>Female</th>
+                          <th>Total</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>Kids</td>
+                          <td>{summaryData.byCategoryAndGender.Kids.Male}</td>
+                          <td>{summaryData.byCategoryAndGender.Kids.Female}</td>
+                          <td>{summaryData.byCategory.Kids}</td>
+                        </tr>
+                        <tr>
+                          <td>Youth</td>
+                          <td>{summaryData.byCategoryAndGender.Youth.Male}</td>
+                          <td>{summaryData.byCategoryAndGender.Youth.Female}</td>
+                          <td>{summaryData.byCategory.Youth}</td>
+                        </tr>
+                        <tr>
+                          <td>Young Professionals</td>
+                          <td>{summaryData.byCategoryAndGender['Young Professionals'].Male}</td>
+                          <td>{summaryData.byCategoryAndGender['Young Professionals'].Female}</td>
+                          <td>{summaryData.byCategory['Young Professionals']}</td>
+                        </tr>
+                        <tr className="summary-total">
+                          <td><strong>TOTAL</strong></td>
+                          <td><strong>{summaryData.byGender.Male}</strong></td>
+                          <td><strong>{summaryData.byGender.Female}</strong></td>
+                          <td><strong>{summaryData.total}</strong></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="summary-section">
+                    <h3>By Gender</h3>
+                    <div className="summary-stats">
+                      <div className="stat-card">
+                        <span className="stat-label">Male</span>
+                        <span className="stat-number">{summaryData.byGender.Male}</span>
+                      </div>
+                      <div className="stat-card">
+                        <span className="stat-label">Female</span>
+                        <span className="stat-number">{summaryData.byGender.Female}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="summary-section">
+                    <h3>By Status</h3>
+                    <div className="summary-stats">
+                      <div className="stat-card">
+                        <span className="stat-label">Active</span>
+                        <span className="stat-number">{summaryData.byStatus.Active}</span>
+                      </div>
+                      <div className="stat-card">
+                        <span className="stat-label">Inactive</span>
+                        <span className="stat-number">{summaryData.byStatus.Inactive}</span>
+                      </div>
+                      <div className="stat-card">
+                        <span className="stat-label">Pending</span>
+                        <span className="stat-number">{summaryData.byStatus.Pending}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="summary-section">
+                    <h3>By Cellgroup Leader</h3>
+                    <table className="summary-table">
+                      <thead>
+                        <tr>
+                          <th>Cellgroup Leader</th>
+                          <th>Count</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {Object.entries(summaryData.byCellgroup).map(([leader, count]) => (
+                          <tr key={leader}>
+                            <td>{leader}</td>
+                            <td>{count}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </>
+              )}
             </div>
 
             <div className="modal-footer">
@@ -450,7 +866,7 @@ const UserLists = () => {
         </div>
       )}
 
-      {/* Edit Modal */}
+      {/* Edit Modal for Attendance Users */}
       {isModalOpen && (
         <div className="modal-overlay" onClick={closeModal}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
@@ -536,6 +952,115 @@ const UserLists = () => {
                   {saving ? 'Saving...' : 'Save Changes'}
                 </button>
                 <button type="button" className="btn-secondary" onClick={closeModal}>
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Modal for CKF Members */}
+      {isMemberModalOpen && (
+        <div className="modal-overlay" onClick={closeMemberModal}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>Edit CKF Member</h2>
+              <button className="modal-close" onClick={closeMemberModal}>&times;</button>
+            </div>
+            {memberEditError && <div className="error-message">{memberEditError}</div>}
+            <form onSubmit={handleMemberEditSubmit}>
+              <div className="form-row">
+                <div className="form-group">
+                  <label>Full Name</label>
+                  <input
+                    type="text"
+                    name="fullName"
+                    value={memberFormData.fullName}
+                    onChange={handleMemberEditChange}
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Gender</label>
+                  <select
+                    name="gender"
+                    value={memberFormData.gender}
+                    onChange={handleMemberEditChange}
+                    required
+                  >
+                    <option value="">Select gender</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="form-row">
+                <div className="form-group">
+                  <label>Age</label>
+                  <input
+                    type="number"
+                    name="age"
+                    value={memberFormData.age}
+                    onChange={handleMemberEditChange}
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Contact No</label>
+                  <input
+                    type="text"
+                    name="contactNo"
+                    value={memberFormData.contactNo}
+                    onChange={handleMemberEditChange}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label>Address</label>
+                <input
+                  type="text"
+                  name="address"
+                  value={memberFormData.address}
+                  onChange={handleMemberEditChange}
+                  required
+                />
+              </div>
+
+              <div className="form-row">
+                <div className="form-group">
+                  <label>Cellgroup Leader</label>
+                  <input
+                    type="text"
+                    name="cellgroupLeader"
+                    value={memberFormData.cellgroupLeader}
+                    onChange={handleMemberEditChange}
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Status</label>
+                  <select
+                    name="status"
+                    value={memberFormData.status}
+                    onChange={handleMemberEditChange}
+                    required
+                  >
+                    <option value="Active">Active</option>
+                    <option value="Inactive">Inactive</option>
+                    <option value="Pending">Pending</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="button-group">
+                <button type="submit" className="btn-primary" disabled={memberSaving}>
+                  {memberSaving ? 'Saving...' : 'Save Changes'}
+                </button>
+                <button type="button" className="btn-secondary" onClick={closeMemberModal}>
                   Cancel
                 </button>
               </div>

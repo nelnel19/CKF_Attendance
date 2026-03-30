@@ -703,3 +703,144 @@ body {
     width: 95%;
   }
 }
+/* Tabs Styles */
+.tabs {
+  display: flex;
+  gap: 0;
+  margin-bottom: 1.5rem;
+  border-bottom: 2px solid #000000;
+  background: #FFFFFF;
+  border-radius: 12px 12px 0 0;
+  overflow: hidden;
+}
+
+.tab-button {
+  padding: 0.75rem 1.5rem;
+  background: #F8F5F0;
+  border: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #6B5A45;
+  border-right: 1px solid #000000;
+  font-family: inherit;
+}
+
+.tab-button:first-child {
+  border-radius: 12px 0 0 0;
+}
+
+.tab-button:last-child {
+  border-right: none;
+  border-radius: 0 12px 0 0;
+}
+
+.tab-button:hover {
+  background: #FCFAF7;
+  color: #1E1A17;
+}
+
+.tab-button.active {
+  background: #FFFFFF;
+  color: #1E1A17;
+  border-bottom: 2px solid #F5C400;
+  margin-bottom: -2px;
+}
+
+/* Search Input */
+.search-input {
+  padding: 0.3rem 0.6rem;
+  border: 1px solid #E8E0D4;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-family: inherit;
+  width: 200px;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #CBB38F;
+}
+
+.clear-filters-btn {
+  background: #F8F5F0;
+  color: #6B5A45;
+  padding: 0.4rem 0.8rem;
+  border-radius: 8px;
+  border: 1px solid #000000;
+  cursor: pointer;
+  font-size: 0.75rem;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.clear-filters-btn:hover {
+  background: #FFFFFF;
+  transform: translateY(-1px);
+}
+
+/* Status Badges */
+.status-badge {
+  display: inline-block;
+  padding: 0.25rem 0.6rem;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.status-active {
+  background: #E8F5E9;
+  color: #2E7D32;
+  border: 1px solid #2E7D32;
+}
+
+.status-inactive {
+  background: #FFEBEE;
+  color: #C62828;
+  border: 1px solid #C62828;
+}
+
+.status-pending {
+  background: #FFF3E0;
+  color: #ED6C02;
+  border: 1px solid #ED6C02;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .tabs {
+    flex-direction: column;
+    border-bottom: none;
+    border-radius: 12px;
+  }
+  
+  .tab-button {
+    border-right: none;
+    border-bottom: 1px solid #000000;
+    border-radius: 0;
+  }
+  
+  .tab-button:first-child {
+    border-radius: 12px 12px 0 0;
+  }
+  
+  .tab-button:last-child {
+    border-radius: 0 0 12px 12px;
+    border-bottom: none;
+  }
+  
+  .tab-button.active {
+    border-bottom: 2px solid #F5C400;
+    margin-bottom: 0;
+  }
+  
+  .search-input {
+    width: 100%;
+  }
+  
+  .filter-group {
+    width: 100%;
+  }
+}
