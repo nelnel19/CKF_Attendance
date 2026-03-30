@@ -476,30 +476,30 @@ const UserLists = () => {
 
   return (
     <div className="user-list-container">
-      <div className="header">
-        <img src="/ckflogo.jpg" alt="CKF Logo" className="custom-logo-img" />
-        <h1 className="title">CKF Attendance System</h1>
-      </div>
+      <div className="sticky-header-section">
+        <div className="header">
+          <img src="/ckflogo.jpg" alt="CKF Logo" className="custom-logo-img" />
+          <h1 className="title">CKF Attendance System</h1>
+        </div>
 
-      {/* Tabs */}
-      <div className="tabs">
-        <button
-          className={`tab-button ${activeTab === 'attendance' ? 'active' : ''}`}
-          onClick={() => setActiveTab('attendance')}
-        >
-          Attendance Records
-        </button>
-        <button
-          className={`tab-button ${activeTab === 'members' ? 'active' : ''}`}
-          onClick={() => setActiveTab('members')}
-        >
-          CKF Members Directory
-        </button>
-      </div>
+        {/* Tabs */}
+        <div className="tabs">
+          <button
+            className={`tab-button ${activeTab === 'attendance' ? 'active' : ''}`}
+            onClick={() => setActiveTab('attendance')}
+          >
+            Attendance Records
+          </button>
+          <button
+            className={`tab-button ${activeTab === 'members' ? 'active' : ''}`}
+            onClick={() => setActiveTab('members')}
+          >
+            CKF Members Directory
+          </button>
+        </div>
 
-      {/* Attendance Tab */}
-      {activeTab === 'attendance' && (
-        <>
+        {/* Attendance Tab Controls */}
+        {activeTab === 'attendance' && (
           <div className="controls">
             <Link to="/add" className="add-button">
               Attendance
@@ -550,58 +550,10 @@ const UserLists = () => {
               )}
             </div>
           </div>
+        )}
 
-          {error && <div className="error">{error}</div>}
-
-          {filteredUsers.length === 0 ? (
-            <div className="empty-message">
-              {filterCategory === 'all' && !filterDate
-                ? 'No attendance records yet. Add your first member!'
-                : `No members found matching your filters.`}
-            </div>
-          ) : (
-            <div className="table-wrapper">
-              <table className="user-table">
-                <thead>
-                  <tr>
-                    <th>Full Name</th>
-                    <th>Gender</th>
-                    <th>Age</th>
-                    <th>Age Category</th>
-                    <th>Address</th>
-                    <th>Contact No</th>
-                    <th>Cellgroup Leader</th>
-                    <th>Date Added</th>
-                    <th>Actions</th>
-                   </tr>
-                </thead>
-                <tbody>
-                  {filteredUsers.map(user => (
-                    <tr key={user._id}>
-                      <td>{user.fullName}</td>
-                      <td>{user.gender || '-'}</td>
-                      <td>{user.age}</td>
-                      <td>{getAgeCategory(user.age)}</td>
-                      <td>{user.address}</td>
-                      <td>{user.contactNo}</td>
-                      <td>{user.cellgroupLeader}</td>
-                      <td>{new Date(user.createdAt).toLocaleDateString()}</td>
-                      <td className="actions">
-                        <button onClick={() => openEditModal(user)} className="edit-btn">Edit</button>
-                        <button onClick={() => handleDelete(user._id, user.fullName, 'attendance')} className="delete-btn">Delete</button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </>
-      )}
-
-      {/* CKF Members Directory Tab */}
-      {activeTab === 'members' && (
-        <>
+        {/* CKF Members Tab Controls */}
+        {activeTab === 'members' && (
           <div className="controls">
             <button 
               onClick={() => {
@@ -663,60 +615,117 @@ const UserLists = () => {
               )}
             </div>
           </div>
+        )}
+      </div>
 
-          {membersError && <div className="error">{membersError}</div>}
+      {/* Scrollable Table Content */}
+      <div className="scrollable-content">
+        {activeTab === 'attendance' && (
+          <>
+            {error && <div className="error">{error}</div>}
 
-          {filteredMembers.length === 0 ? (
-            <div className="empty-message">
-              {memberSearch || memberFilterStatus !== 'all'
-                ? `No members found matching your filters.`
-                : 'No CKF members found in the database.'}
-            </div>
-          ) : (
-            <div className="table-wrapper">
-              <table className="user-table">
-                <thead>
-                  <tr>
-                    <th>Full Name</th>
-                    <th>Gender</th>
-                    <th>Age</th>
-                    <th>Age Category</th>
-                    <th>Address</th>
-                    <th>Contact No</th>
-                    <th>Cellgroup Leader</th>
-                    <th>Status</th>
-                    <th>Date Joined</th>
-                    <th>Actions</th>
-                   </tr>
-                </thead>
-                <tbody>
-                  {filteredMembers.map(member => (
-                    <tr key={member._id}>
-                      <td>{member.fullName}</td>
-                      <td>{member.gender || '-'}</td>
-                      <td>{member.age}</td>
-                      <td>{getAgeCategory(member.age)}</td>
-                      <td>{member.address}</td>
-                      <td>{member.contactNo}</td>
-                      <td>{member.cellgroupLeader}</td>
-                      <td>
-                        <span className={`status-badge status-${member.status?.toLowerCase() || 'active'}`}>
-                          {member.status || 'Active'}
-                        </span>
-                      </td>
-                      <td>{new Date(member.dateJoined).toLocaleDateString()}</td>
-                      <td className="actions">
-                        <button onClick={() => openEditMemberModal(member)} className="edit-btn">Edit</button>
-                        <button onClick={() => handleDelete(member._id, member.fullName, 'members')} className="delete-btn">Delete</button>
-                      </td>
+            {filteredUsers.length === 0 ? (
+              <div className="empty-message">
+                {filterCategory === 'all' && !filterDate
+                  ? 'No attendance records yet. Add your first member!'
+                  : `No members found matching your filters.`}
+              </div>
+            ) : (
+              <div className="table-wrapper">
+                <table className="user-table">
+                  <thead>
+                    <tr>
+                      <th>Full Name</th>
+                      <th>Gender</th>
+                      <th>Age</th>
+                      <th>Age Category</th>
+                      <th>Address</th>
+                      <th>Contact No</th>
+                      <th>Cellgroup Leader</th>
+                      <th>Date Added</th>
+                      <th>Actions</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </>
-      )}
+                  </thead>
+                  <tbody>
+                    {filteredUsers.map(user => (
+                      <tr key={user._id}>
+                        <td>{user.fullName}</td>
+                        <td>{user.gender || '-'}</td>
+                        <td>{user.age}</td>
+                        <td>{getAgeCategory(user.age)}</td>
+                        <td>{user.address}</td>
+                        <td>{user.contactNo}</td>
+                        <td>{user.cellgroupLeader}</td>
+                        <td>{new Date(user.createdAt).toLocaleDateString()}</td>
+                        <td className="actions">
+                          <button onClick={() => openEditModal(user)} className="edit-btn">Edit</button>
+                          <button onClick={() => handleDelete(user._id, user.fullName, 'attendance')} className="delete-btn">Delete</button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </>
+        )}
+
+        {activeTab === 'members' && (
+          <>
+            {membersError && <div className="error">{membersError}</div>}
+
+            {filteredMembers.length === 0 ? (
+              <div className="empty-message">
+                {memberSearch || memberFilterStatus !== 'all'
+                  ? `No members found matching your filters.`
+                  : 'No CKF members found in the database.'}
+              </div>
+            ) : (
+              <div className="table-wrapper">
+                <table className="user-table">
+                  <thead>
+                    <tr>
+                      <th>Full Name</th>
+                      <th>Gender</th>
+                      <th>Age</th>
+                      <th>Age Category</th>
+                      <th>Address</th>
+                      <th>Contact No</th>
+                      <th>Cellgroup Leader</th>
+                      <th>Status</th>
+                      <th>Date Joined</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredMembers.map(member => (
+                      <tr key={member._id}>
+                        <td>{member.fullName}</td>
+                        <td>{member.gender || '-'}</td>
+                        <td>{member.age}</td>
+                        <td>{getAgeCategory(member.age)}</td>
+                        <td>{member.address}</td>
+                        <td>{member.contactNo}</td>
+                        <td>{member.cellgroupLeader}</td>
+                        <td>
+                          <span className={`status-badge status-${member.status?.toLowerCase() || 'active'}`}>
+                            {member.status || 'Active'}
+                          </span>
+                        </td>
+                        <td>{new Date(member.dateJoined).toLocaleDateString()}</td>
+                        <td className="actions">
+                          <button onClick={() => openEditMemberModal(member)} className="edit-btn">Edit</button>
+                          <button onClick={() => handleDelete(member._id, member.fullName, 'members')} className="delete-btn">Delete</button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </>
+        )}
+      </div>
 
       {/* Summary Modal */}
       {showSummaryModal && summaryData && (
@@ -780,7 +789,7 @@ const UserLists = () => {
                           <th>Male</th>
                           <th>Female</th>
                           <th>Total</th>
-                         </tr>
+                        </tr>
                       </thead>
                       <tbody>
                         <tr>
