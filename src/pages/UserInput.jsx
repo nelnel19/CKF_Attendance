@@ -320,15 +320,11 @@ const UserInput = () => {
             <div
               key={index}
               className={`slide ${index === currentSlide ? 'active' : ''}`}
-              style={{ backgroundImage: `url(${img})` }}
             >
-              <div className="slide-overlay">
-                <div className="slide-content">
-                  <h2>Christ the King Fellowship</h2>
-                  <p>Building lives, sharing God's love</p>
-                  <div className="verse">"For where two or three gather in my name, there am I with them."</div>
-                  <div className="verse-ref">— Matthew 18:20</div>
-                </div>
+              <img src={img} alt={`Slide ${index + 1}`} className="slide-image" />
+              <div className="verse-overlay">
+                <div className="verse-text">"For where two or three gather in my name, there am I with them."</div>
+                <div className="verse-ref">— Matthew 18:20 —</div>
               </div>
             </div>
           ))}
