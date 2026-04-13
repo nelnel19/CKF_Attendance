@@ -151,12 +151,10 @@ const UserLists = () => {
   const clearAllAttendance = async () => {
     setClearingAttendance(true);
     try {
-      // Delete all users one by one
       const deletePromises = users.map(user => axios.delete(`${API_URL}/${user._id}`));
       await Promise.all(deletePromises);
       await fetchUsers();
       setShowClearConfirmModal(false);
-      // Show success message (optional - you can add a toast notification)
       alert('All attendance records have been cleared successfully!');
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to clear attendance records');
@@ -227,17 +225,14 @@ const UserLists = () => {
     };
 
     ckfMembers.forEach(member => {
-      // Count by gender
       if (member.gender === 'Male' || member.gender === 'Female') {
         summary.byGender[member.gender]++;
       }
       
-      // Count by status
       if (member.status) {
         summary.byStatus[member.status]++;
       }
       
-      // Count by cellgroup leader
       const leader = member.cellgroupLeader || 'Unassigned';
       if (!summary.byCellgroup[leader]) {
         summary.byCellgroup[leader] = 0;
@@ -313,7 +308,6 @@ const UserLists = () => {
         ['Cellgroup Leader', 'Count']
       ];
       
-      // Add cellgroup breakdown
       Object.entries(summaryData.byCellgroup).forEach(([leader, count]) => {
         summaryRows.push([leader, count]);
       });
@@ -407,7 +401,6 @@ const UserLists = () => {
     setMemberEditError('');
   };
 
-  // Add Member Functions
   const openAddMemberModal = () => {
     setNewMemberData({
       fullName: '',
@@ -509,7 +502,6 @@ const UserLists = () => {
     }
   };
 
-  // Export to Excel for attendance
   const exportToExcel = () => {
     const exportData = filteredUsers.map(user => ({
       'Full Name': user.fullName,
@@ -530,7 +522,6 @@ const UserLists = () => {
     XLSX.writeFile(wb, fileName);
   };
 
-  // Export to Excel for CKF members
   const exportCkfMembersToExcel = () => {
     const exportData = filteredMembers.map(member => ({
       'Full Name': member.fullName,
@@ -571,7 +562,6 @@ const UserLists = () => {
         <h1 className="title">CKF Attendance System</h1>
       </div>
 
-      {/* Tabs */}
       <div className="tabs">
         <button
           className={`tab-button ${activeTab === 'attendance' ? 'active' : ''}`}
@@ -587,13 +577,12 @@ const UserLists = () => {
         </button>
       </div>
 
-      {/* Attendance Tab */}
       {activeTab === 'attendance' && (
         <>
           <div className="controls">
             <div className="left-controls">
               <Link to="/add" className="add-button">
-                Attendance
+                + Add Attendance
               </Link>
               {users.length > 0 && (
                 <button 
@@ -601,7 +590,6 @@ const UserLists = () => {
                   className="clear-all-btn"
                   disabled={clearingAttendance}
                 >
-                  <span className="clear-icon">🗑️</span>
                   Clear All Attendance
                 </button>
               )}
@@ -703,7 +691,6 @@ const UserLists = () => {
         </>
       )}
 
-      {/* CKF Members Directory Tab */}
       {activeTab === 'members' && (
         <>
           <div className="controls">
@@ -711,7 +698,7 @@ const UserLists = () => {
               onClick={openAddMemberModal}
               className="add-button"
             >
-              Add New Member
+              + Add New Member
             </button>
 
             <div className="filter-group">
@@ -827,16 +814,11 @@ const UserLists = () => {
         <div className="modal-overlay" onClick={() => setShowClearConfirmModal(false)}>
           <div className="modal-content confirm-modal" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
-              <h2>Clear All Attendance Records</h2>
+              <h2>Clear Attendance Records</h2>
               <button className="modal-close" onClick={() => setShowClearConfirmModal(false)}>&times;</button>
             </div>
             <div className="confirm-body">
-              <div className="warning-icon">⚠️</div>
-              <h3>Are you sure you want to clear all attendance records?</h3>
-              <p>This action cannot be undone. You will lose all {users.length} attendance record(s).</p>
-              <div className="warning-box">
-                <strong>Warning:</strong> This will permanently delete all attendance data from the database.
-              </div>
+              <p>Are you sure you want to clear all attendance records for today?</p>
             </div>
             <div className="modal-footer">
               <button 
@@ -844,7 +826,7 @@ const UserLists = () => {
                 className="btn-danger" 
                 disabled={clearingAttendance}
               >
-                {clearingAttendance ? 'Clearing...' : 'Yes, Clear All Records'}
+                {clearingAttendance ? 'Clearing...' : 'Yes, Clear'}
               </button>
               <button 
                 onClick={() => setShowClearConfirmModal(false)} 
