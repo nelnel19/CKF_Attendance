@@ -20,6 +20,7 @@ const UserLists = () => {
   const [showSummaryModal, setShowSummaryModal] = useState(false);
   const [summaryData, setSummaryData] = useState(null);
   const [summaryType, setSummaryType] = useState('attendance');
+  const [clearingAttendance, setClearingAttendance] = useState(false);
 
   // Modal state for attendance users
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -63,6 +64,9 @@ const UserLists = () => {
   });
   const [addingMember, setAddingMember] = useState(false);
   const [addMemberError, setAddMemberError] = useState('');
+
+  // Confirmation Modal State for Clear All
+  const [showClearConfirmModal, setShowClearConfirmModal] = useState(false);
 
   // Age category function
   const getAgeCategory = (age) => {
@@ -142,6 +146,24 @@ const UserLists = () => {
 
     return matchStatus && matchSearch;
   });
+
+  // Clear all attendance records
+  const clearAllAttendance = async () => {
+    setClearingAttendance(true);
+    try {
+      // Delete all users one by one
+      const deletePromises = users.map(user => axios.delete(`${API_URL}/${user._id}`));
+      await Promise.all(deletePromises);
+      await fetchUsers();
+      setShowClearConfirmModal(false);
+      // Show success message (optional - you can add a toast notification)
+      alert('All attendance records have been cleared successfully!');
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to clear attendance records');
+    } finally {
+      setClearingAttendance(false);
+    }
+  };
 
   // Generate summary data for attendance
   const generateSummary = () => {
@@ -569,9 +591,21 @@ const UserLists = () => {
       {activeTab === 'attendance' && (
         <>
           <div className="controls">
-            <Link to="/add" className="add-button">
-              Attendance
-            </Link>
+            <div className="left-controls">
+              <Link to="/add" className="add-button">
+                Attendance
+              </Link>
+              {users.length > 0 && (
+                <button 
+                  onClick={() => setShowClearConfirmModal(true)} 
+                  className="clear-all-btn"
+                  disabled={clearingAttendance}
+                >
+                  <span className="clear-icon">🗑️</span>
+                  Clear All Attendance
+                </button>
+              )}
+            </div>
 
             <div className="filter-group">
               <div className="filter">
@@ -786,6 +820,41 @@ const UserLists = () => {
             </div>
           )}
         </>
+      )}
+
+      {/* Clear All Attendance Confirmation Modal */}
+      {showClearConfirmModal && (
+        <div className="modal-overlay" onClick={() => setShowClearConfirmModal(false)}>
+          <div className="modal-content confirm-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>Clear All Attendance Records</h2>
+              <button className="modal-close" onClick={() => setShowClearConfirmModal(false)}>&times;</button>
+            </div>
+            <div className="confirm-body">
+              <div className="warning-icon">⚠️</div>
+              <h3>Are you sure you want to clear all attendance records?</h3>
+              <p>This action cannot be undone. You will lose all {users.length} attendance record(s).</p>
+              <div className="warning-box">
+                <strong>Warning:</strong> This will permanently delete all attendance data from the database.
+              </div>
+            </div>
+            <div className="modal-footer">
+              <button 
+                onClick={clearAllAttendance} 
+                className="btn-danger" 
+                disabled={clearingAttendance}
+              >
+                {clearingAttendance ? 'Clearing...' : 'Yes, Clear All Records'}
+              </button>
+              <button 
+                onClick={() => setShowClearConfirmModal(false)} 
+                className="btn-secondary"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       {/* Summary Modal */}

@@ -966,3 +966,130 @@ body {
     font-size: 0.65rem;
   }
 }
+/* Left controls wrapper */
+.left-controls {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+/* Clear All Button */
+.clear-all-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: linear-gradient(135deg, #C97B5A 0%, #A55A45 100%);
+  color: #FFFFFF;
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+  border-radius: 10px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  border: 1px solid #000000;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-family: inherit;
+}
+
+.clear-all-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(201, 123, 90, 0.3);
+  background: linear-gradient(135deg, #B86A4A 0%, #954A35 100%);
+}
+
+.clear-all-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.clear-icon {
+  font-size: 1rem;
+}
+
+/* Confirmation Modal */
+.confirm-modal {
+  max-width: 500px;
+}
+
+.confirm-body {
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.warning-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+.confirm-body h3 {
+  font-size: 1.2rem;
+  color: #1E1A17;
+  margin-bottom: 0.75rem;
+}
+
+.confirm-body p {
+  color: #6B5A45;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+
+.warning-box {
+  background: #FEF5F0;
+  border-left: 3px solid #C97B5A;
+  padding: 0.75rem;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  text-align: left;
+  margin-top: 1rem;
+}
+
+.warning-box strong {
+  color: #C97B5A;
+}
+
+/* Danger Button */
+.btn-danger {
+  background: linear-gradient(135deg, #C97B5A 0%, #A55A45 100%);
+  color: #FFFFFF;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 1px solid #000000;
+  flex: 1;
+}
+
+.btn-danger:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(201, 123, 90, 0.3);
+}
+
+.btn-danger:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .left-controls {
+    width: 100%;
+    flex-direction: column;
+  }
+  
+  .left-controls .add-button,
+  .left-controls .clear-all-btn {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .confirm-modal {
+    width: 95%;
+  }
+  
+  .confirm-body h3 {
+    font-size: 1rem;
+  }
+}
