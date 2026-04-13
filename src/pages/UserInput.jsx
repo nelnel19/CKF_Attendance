@@ -58,7 +58,7 @@ const UserInput = () => {
     if (value.trim().length > 2) {
       const matches = allMembers.filter(member => 
         member.fullName.toLowerCase().includes(value.toLowerCase())
-      ).slice(0, 8); // Limit to 8 suggestions
+      ).slice(0, 8);
       
       setSuggestions(matches);
       setShowSuggestions(matches.length > 0);
@@ -99,7 +99,6 @@ const UserInput = () => {
         break;
       
       case 'Tab':
-        // Close suggestions when tabbing away
         setShowSuggestions(false);
         setSelectedIndex(-1);
         break;
@@ -133,7 +132,6 @@ const UserInput = () => {
     setSuggestions([]);
     setSelectedIndex(-1);
     
-    // Move focus to the next field after selection
     setTimeout(() => {
       const genderSelect = document.querySelector('select[name="gender"]');
       if (genderSelect) genderSelect.focus();
@@ -143,7 +141,6 @@ const UserInput = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-    // Clear success message when user starts typing again
     if (success) setSuccess('');
   };
 
@@ -153,7 +150,6 @@ const UserInput = () => {
     setError('');
     setSuccess('');
 
-    // Validate required fields
     if (!formData.fullName.trim()) {
       setError('Full Name is required');
       setLoading(false);
@@ -166,10 +162,8 @@ const UserInput = () => {
         age: parseInt(formData.age, 10),
       });
       
-      // Show success message
       setSuccess(`✓ Attendance for ${formData.fullName} has been successfully added!`);
       
-      // Reset form after successful submission
       setFormData({
         fullName: '',
         gender: '',
@@ -179,7 +173,6 @@ const UserInput = () => {
         cellgroupLeader: '',
       });
       
-      // Clear success message after 3 seconds
       setTimeout(() => {
         setSuccess('');
       }, 3000);
@@ -208,18 +201,28 @@ const UserInput = () => {
 
   return (
     <div className="user-input-container">
+      {/* Animated Background */}
+      <div className="animated-bg">
+        <div className="bg-shape shape-1"></div>
+        <div className="bg-shape shape-2"></div>
+        <div className="bg-shape shape-3"></div>
+      </div>
+
       <div className="header">
-        <img src="/ckflogo.jpg" alt="CKF Logo" className="custom-logo-img" />
-        <h1 className="title">Attendance</h1>
+        <img src="/ckflogo.jpg" alt="CKF Logo" className="custom-logo-img floating-logo" />
+        <h1 className="title gradient-text">Attendance</h1>
       </div>
 
       <div className="form-card">
-        {error && <div className="error-message">{error}</div>}
-        {success && <div className="success-message">{success}</div>}
+        {error && <div className="error-message shake-animation">{error}</div>}
+        {success && <div className="success-message slide-in">{success}</div>}
 
         <form onSubmit={handleSubmit}>
-          <div className="form-group" style={{ position: 'relative' }} ref={fullNameInputRef}>
-            <label>Full Name <span className="auto-fill-hint">(Start typing to see suggestions)</span></label>
+          <div className="form-group floating-label-group" style={{ position: 'relative' }} ref={fullNameInputRef}>
+            <label className="animated-label">
+              Full Name 
+              <span className="auto-fill-hint pulse-hint">(Start typing to see suggestions)</span>
+            </label>
             <input
               type="text"
               name="fullName"
@@ -229,14 +232,14 @@ const UserInput = () => {
               placeholder="Type name or use arrow keys to navigate..."
               required
               autoComplete="off"
-              className="full-name-input"
+              className="full-name-input input-glow"
             />
             {showSuggestions && suggestions.length > 0 && (
-              <div className="suggestions-dropdown" ref={suggestionsRef}>
+              <div className="suggestions-dropdown fade-in-up" ref={suggestionsRef}>
                 {suggestions.map((member, index) => (
                   <div
                     key={member._id}
-                    className={`suggestion-item ${index === selectedIndex ? 'selected' : ''}`}
+                    className={`suggestion-item ${index === selectedIndex ? 'selected slide-left' : ''}`}
                     onClick={() => handleSelectSuggestion(member)}
                     onMouseEnter={() => setSelectedIndex(index)}
                   >
@@ -251,7 +254,7 @@ const UserInput = () => {
                   </div>
                 ))}
                 <div className="suggestion-footer">
-                  <span className="keyboard-hint">
+                  <span className="keyboard-hint pulse-text">
                     ↑↓ to navigate • Enter to select • Esc to close
                   </span>
                 </div>
@@ -260,14 +263,14 @@ const UserInput = () => {
           </div>
 
           <div className="form-row">
-            <div className="form-group">
-              <label>Gender</label>
+            <div className="form-group floating-label-group">
+              <label className="animated-label">Gender</label>
               <select
                 name="gender"
                 value={formData.gender}
                 onChange={handleChange}
                 required
-                className="form-select"
+                className="form-select input-glow"
               >
                 <option value="">Select gender</option>
                 <option value="Male">Male</option>
@@ -275,8 +278,8 @@ const UserInput = () => {
               </select>
             </div>
 
-            <div className="form-group">
-              <label>Age</label>
+            <div className="form-group floating-label-group">
+              <label className="animated-label">Age</label>
               <input
                 type="number"
                 name="age"
@@ -284,13 +287,13 @@ const UserInput = () => {
                 onChange={handleChange}
                 placeholder="Enter age"
                 required
-                className="form-input"
+                className="form-input input-glow"
               />
             </div>
           </div>
 
-          <div className="form-group">
-            <label>Address</label>
+          <div className="form-group floating-label-group">
+            <label className="animated-label">Address</label>
             <input
               type="text"
               name="address"
@@ -298,13 +301,13 @@ const UserInput = () => {
               onChange={handleChange}
               placeholder="Enter complete address"
               required
-              className="form-input"
+              className="form-input input-glow"
             />
           </div>
 
           <div className="form-row">
-            <div className="form-group">
-              <label>Contact No</label>
+            <div className="form-group floating-label-group">
+              <label className="animated-label">Contact No</label>
               <input
                 type="text"
                 name="contactNo"
@@ -312,12 +315,12 @@ const UserInput = () => {
                 onChange={handleChange}
                 placeholder="Enter contact number"
                 required
-                className="form-input"
+                className="form-input input-glow"
               />
             </div>
 
-            <div className="form-group">
-              <label>Cellgroup Leader</label>
+            <div className="form-group floating-label-group">
+              <label className="animated-label">Cellgroup Leader</label>
               <input
                 type="text"
                 name="cellgroupLeader"
@@ -325,16 +328,22 @@ const UserInput = () => {
                 onChange={handleChange}
                 placeholder="Enter cellgroup leader name"
                 required
-                className="form-input"
+                className="form-input input-glow"
               />
             </div>
           </div>
 
           <div className="button-group">
-            <button type="submit" className="btn-primary" disabled={loading}>
-              {loading ? 'Adding...' : 'Add Attendance'}
+            <button type="submit" className="btn-primary btn-pulse" disabled={loading}>
+              {loading ? (
+                <span className="loading-spinner">
+                  <span className="spinner"></span> Adding...
+                </span>
+              ) : (
+                'Add Attendance'
+              )}
             </button>
-            <button type="button" className="btn-secondary" onClick={() => navigate('/')}>
+            <button type="button" className="btn-secondary btn-hover" onClick={() => navigate('/')}>
               Cancel
             </button>
           </div>
