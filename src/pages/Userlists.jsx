@@ -50,6 +50,20 @@ const UserLists = () => {
   const [memberSaving, setMemberSaving] = useState(false);
   const [memberEditError, setMemberEditError] = useState('');
 
+  // Add Member Modal State
+  const [isAddMemberModalOpen, setIsAddMemberModalOpen] = useState(false);
+  const [newMemberData, setNewMemberData] = useState({
+    fullName: '',
+    gender: '',
+    age: '',
+    address: '',
+    contactNo: '',
+    cellgroupLeader: '',
+    status: 'Active'
+  });
+  const [addingMember, setAddingMember] = useState(false);
+  const [addMemberError, setAddMemberError] = useState('');
+
   // Age category function
   const getAgeCategory = (age) => {
     if (age >= 1 && age <= 12) return 'Kids';
@@ -371,6 +385,60 @@ const UserLists = () => {
     setMemberEditError('');
   };
 
+  // Add Member Functions
+  const openAddMemberModal = () => {
+    setNewMemberData({
+      fullName: '',
+      gender: '',
+      age: '',
+      address: '',
+      contactNo: '',
+      cellgroupLeader: '',
+      status: 'Active'
+    });
+    setAddMemberError('');
+    setIsAddMemberModalOpen(true);
+  };
+
+  const closeAddMemberModal = () => {
+    setIsAddMemberModalOpen(false);
+    setNewMemberData({
+      fullName: '',
+      gender: '',
+      age: '',
+      address: '',
+      contactNo: '',
+      cellgroupLeader: '',
+      status: 'Active'
+    });
+    setAddMemberError('');
+    setAddingMember(false);
+  };
+
+  const handleAddMemberChange = (e) => {
+    const { name, value } = e.target;
+    setNewMemberData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleAddMemberSubmit = async (e) => {
+    e.preventDefault();
+    setAddingMember(true);
+    setAddMemberError('');
+
+    try {
+      await axios.post(CKF_MEMBERS_URL, {
+        ...newMemberData,
+        age: parseInt(newMemberData.age, 10),
+      });
+      closeAddMemberModal();
+      fetchCkfMembers();
+    } catch (err) {
+      setAddMemberError(err.response?.data?.message || 'Failed to add member');
+    } finally {
+      setAddingMember(false);
+    }
+  };
+
   const handleEditChange = (e) => {
     const { name, value } = e.target;
     setEditFormData(prev => ({ ...prev, [name]: value }));
@@ -606,9 +674,7 @@ const UserLists = () => {
         <>
           <div className="controls">
             <button 
-              onClick={() => {
-                alert('Add new CKF member functionality can be added here');
-              }} 
+              onClick={openAddMemberModal}
               className="add-button"
             >
               Add New Member
@@ -1085,6 +1151,128 @@ const UserLists = () => {
                   {memberSaving ? 'Saving...' : 'Save Changes'}
                 </button>
                 <button type="button" className="btn-secondary" onClick={closeMemberModal}>
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Add New Member Modal for CKF Members */}
+      {isAddMemberModalOpen && (
+        <div className="modal-overlay" onClick={closeAddMemberModal}>
+          <div className="modal-content add-member-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <div>
+                <h2>Add New CKF Member</h2>
+                <p className="modal-subtitle">Fill in the details below to add a new member to the directory</p>
+              </div>
+              <button className="modal-close" onClick={closeAddMemberModal}>&times;</button>
+            </div>
+            {addMemberError && <div className="error-message">{addMemberError}</div>}
+            <form onSubmit={handleAddMemberSubmit}>
+              <div className="form-row">
+                <div className="form-group">
+                  <label>Full Name <span className="required">*</span></label>
+                  <input
+                    type="text"
+                    name="fullName"
+                    value={newMemberData.fullName}
+                    onChange={handleAddMemberChange}
+                    placeholder="Enter full name"
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Gender <span className="required">*</span></label>
+                  <select
+                    name="gender"
+                    value={newMemberData.gender}
+                    onChange={handleAddMemberChange}
+                    required
+                  >
+                    <option value="">Select gender</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="form-row">
+                <div className="form-group">
+                  <label>Age <span className="required">*</span></label>
+                  <input
+                    type="number"
+                    name="age"
+                    value={newMemberData.age}
+                    onChange={handleAddMemberChange}
+                    placeholder="Enter age"
+                    min="0"
+                    max="120"
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Contact Number <span className="required">*</span></label>
+                  <input
+                    type="tel"
+                    name="contactNo"
+                    value={newMemberData.contactNo}
+                    onChange={handleAddMemberChange}
+                    placeholder="Enter contact number"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label>Address <span className="required">*</span></label>
+                <input
+                  type="text"
+                  name="address"
+                  value={newMemberData.address}
+                  onChange={handleAddMemberChange}
+                  placeholder="Enter complete address"
+                  required
+                />
+              </div>
+
+              <div className="form-row">
+                <div className="form-group">
+                  <label>Cellgroup Leader <span className="required">*</span></label>
+                  <input
+                    type="text"
+                    name="cellgroupLeader"
+                    value={newMemberData.cellgroupLeader}
+                    onChange={handleAddMemberChange}
+                    placeholder="Enter cellgroup leader name"
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Status</label>
+                  <select
+                    name="status"
+                    value={newMemberData.status}
+                    onChange={handleAddMemberChange}
+                  >
+                    <option value="Active">Active</option>
+                    <option value="Inactive">Inactive</option>
+                    <option value="Pending">Pending</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="form-info">
+                <p><strong>Note:</strong> All fields marked with <span className="required">*</span> are required.</p>
+              </div>
+
+              <div className="button-group">
+                <button type="submit" className="btn-primary" disabled={addingMember}>
+                  {addingMember ? 'Adding Member...' : 'Add Member'}
+                </button>
+                <button type="button" className="btn-secondary" onClick={closeAddMemberModal}>
                   Cancel
                 </button>
               </div>

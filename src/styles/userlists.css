@@ -899,3 +899,70 @@ body {
     max-height: calc(100vh - 380px);
   }
 }
+/* Add New Member Modal Styles */
+.add-member-modal {
+  max-width: 640px;
+}
+
+.modal-subtitle {
+  font-size: 0.75rem;
+  color: #6B5A45;
+  margin-top: 0.25rem;
+  font-weight: normal;
+}
+
+.required {
+  color: #C97B5A;
+  font-weight: bold;
+}
+
+.form-info {
+  background: #FCFAF7;
+  padding: 0.75rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  font-size: 0.7rem;
+  border-left: 3px solid #F5C400;
+}
+
+.form-info p {
+  margin: 0;
+  color: #6B5A45;
+}
+
+/* Improved form styling for all modals */
+.modal-content form {
+  padding: 1.5rem;
+}
+
+.form-group input,
+.form-group select {
+  transition: all 0.2s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  border-color: #CBB38F;
+  box-shadow: 0 0 0 3px rgba(203, 179, 143, 0.1);
+  outline: none;
+}
+
+.form-group input::placeholder {
+  color: #CBB38F;
+  opacity: 0.6;
+}
+
+/* Responsive adjustments for add member modal */
+@media (max-width: 768px) {
+  .add-member-modal {
+    max-width: 95%;
+  }
+  
+  .modal-header h2 {
+    font-size: 1.1rem;
+  }
+  
+  .modal-subtitle {
+    font-size: 0.65rem;
+  }
+}
