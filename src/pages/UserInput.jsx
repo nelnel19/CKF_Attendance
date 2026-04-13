@@ -321,7 +321,7 @@ const UserInput = () => {
 
           {/* Welcome Text */}
           <div className="welcome-text">
-            <h2>Christ the King</h2>
+            <h2>Christ's Kerusso Fellowship</h2>
             <h3>Fellowship</h3>
             <p>"Where two or three gather in my name, there am I with them."</p>
             <span>— Matthew 18:20</span>
