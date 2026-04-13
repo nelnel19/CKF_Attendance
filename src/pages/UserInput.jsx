@@ -23,9 +23,28 @@ const UserInput = () => {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [allMembers, setAllMembers] = useState([]);
   const [selectedIndex, setSelectedIndex] = useState(-1);
+  const [bouncingDots, setBouncingDots] = useState('');
   
   const fullNameInputRef = useRef(null);
   const suggestionsRef = useRef(null);
+
+  // Animated dots effect while loading
+  useEffect(() => {
+    let interval;
+    if (loading) {
+      interval = setInterval(() => {
+        setBouncingDots(prev => {
+          if (prev === '...') return '';
+          if (prev === '') return '.';
+          if (prev === '.') return '..';
+          return '...';
+        });
+      }, 400);
+    } else {
+      setBouncingDots('');
+    }
+    return () => clearInterval(interval);
+  }, [loading]);
 
   // Age category function
   const getAgeCategory = (age) => {
@@ -201,11 +220,31 @@ const UserInput = () => {
 
   return (
     <div className="user-input-container">
-      {/* Animated Background */}
+      {/* Animated Background with particles */}
       <div className="animated-bg">
+        <div className="particles">
+          {[...Array(20)].map((_, i) => (
+            <div key={i} className="particle" style={{
+              '--delay': `${i * 0.5}s`,
+              '--duration': `${5 + Math.random() * 5}s`,
+              '--start-x': `${Math.random() * 100}%`,
+              '--end-x': `${Math.random() * 100}%`,
+            }}></div>
+          ))}
+        </div>
         <div className="bg-shape shape-1"></div>
         <div className="bg-shape shape-2"></div>
         <div className="bg-shape shape-3"></div>
+        <div className="bg-shape shape-4"></div>
+      </div>
+
+      {/* Animated decorative elements */}
+      <div className="decorative-icons">
+        <div className="deco-icon icon-1">✝</div>
+        <div className="deco-icon icon-2">⛪</div>
+        <div className="deco-icon icon-3">🙏</div>
+        <div className="deco-icon icon-4">🕊️</div>
+        <div className="deco-icon icon-5">❤️</div>
       </div>
 
       <div className="header">
@@ -337,10 +376,13 @@ const UserInput = () => {
             <button type="submit" className="btn-primary btn-pulse" disabled={loading}>
               {loading ? (
                 <span className="loading-spinner">
-                  <span className="spinner"></span> Adding...
+                  <span className="spinner"></span> 
+                  Adding{bouncingDots}
                 </span>
               ) : (
-                'Add Attendance'
+                <span className="btn-text">
+                  <span className="btn-icon">✓</span> Add Attendance
+                </span>
               )}
             </button>
             <button type="button" className="btn-secondary btn-hover" onClick={() => navigate('/')}>
@@ -348,6 +390,11 @@ const UserInput = () => {
             </button>
           </div>
         </form>
+
+        {/* Animated helper text */}
+        <div className="helper-text">
+          <div className="typing-animation">Ready to record attendance...</div>
+        </div>
       </div>
     </div>
   );
