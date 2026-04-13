@@ -220,14 +220,13 @@ const UserInput = () => {
 
   return (
     <div className="user-input-container">
-      {/* Enhanced Animated Background */}
+      {/* Animated Background with particles */}
       <div className="animated-bg">
-        <div className="gradient-overlay"></div>
         <div className="particles">
-          {[...Array(30)].map((_, i) => (
+          {[...Array(20)].map((_, i) => (
             <div key={i} className="particle" style={{
-              '--delay': `${i * 0.3}s`,
-              '--duration': `${4 + Math.random() * 6}s`,
+              '--delay': `${i * 0.5}s`,
+              '--duration': `${5 + Math.random() * 5}s`,
               '--start-x': `${Math.random() * 100}%`,
               '--end-x': `${Math.random() * 100}%`,
             }}></div>
@@ -236,173 +235,156 @@ const UserInput = () => {
         <div className="bg-shape shape-1"></div>
         <div className="bg-shape shape-2"></div>
         <div className="bg-shape shape-3"></div>
-        <div className="bg-shape shape-4"></div>
-        <div className="bg-shape shape-5"></div>
       </div>
 
-      {/* Welcome Banner */}
-      <div className="welcome-banner">
-        <div className="banner-content">
-          <div className="welcome-icon">📝</div>
-          <div className="welcome-text">
-            <h2>Record Attendance</h2>
-            <p>Quickly add attendance for CKF members</p>
-          </div>
-        </div>
+      {/* Header with Logo */}
+      <div className="header">
+        <img src="/ckflogo.jpg" alt="CKF Logo" className="custom-logo-img floating-logo" />
+        <h1 className="title gradient-text">Attendance</h1>
       </div>
 
-      <div className="form-wrapper">
-        <div className="form-card">
-          {error && <div className="error-message shake-animation">{error}</div>}
-          {success && <div className="success-message slide-in">{success}</div>}
+      <div className="form-card">
+        {error && <div className="error-message shake-animation">{error}</div>}
+        {success && <div className="success-message slide-in">{success}</div>}
 
-          <form onSubmit={handleSubmit}>
-            <div className="form-group floating-label-group" style={{ position: 'relative' }} ref={fullNameInputRef}>
-              <label className="animated-label">
-                Full Name 
-                <span className="auto-fill-hint pulse-hint">(Start typing to see suggestions)</span>
-              </label>
-              <input
-                type="text"
-                name="fullName"
-                value={formData.fullName}
-                onChange={handleNameChange}
-                onKeyDown={handleKeyDown}
-                placeholder="Type name or use arrow keys to navigate..."
-                required
-                autoComplete="off"
-                className="full-name-input input-glow"
-              />
-              {showSuggestions && suggestions.length > 0 && (
-                <div className="suggestions-dropdown fade-in-up" ref={suggestionsRef}>
-                  {suggestions.map((member, index) => (
-                    <div
-                      key={member._id}
-                      className={`suggestion-item ${index === selectedIndex ? 'selected slide-left' : ''}`}
-                      onClick={() => handleSelectSuggestion(member)}
-                      onMouseEnter={() => setSelectedIndex(index)}
-                    >
-                      <div className="suggestion-name">{member.fullName}</div>
-                      <div className="suggestion-details">
-                        <span className="suggestion-leader">{member.cellgroupLeader}</span>
-                        <span className="suggestion-separator">•</span>
-                        <span className="suggestion-age">{member.age} yrs</span>
-                        <span className="suggestion-separator">•</span>
-                        <span className="suggestion-gender">{member.gender}</span>
-                      </div>
+        <form onSubmit={handleSubmit}>
+          <div className="form-group floating-label-group" style={{ position: 'relative' }} ref={fullNameInputRef}>
+            <label className="animated-label">
+              Full Name 
+              <span className="auto-fill-hint pulse-hint">(Start typing to see suggestions)</span>
+            </label>
+            <input
+              type="text"
+              name="fullName"
+              value={formData.fullName}
+              onChange={handleNameChange}
+              onKeyDown={handleKeyDown}
+              placeholder="Type name or use arrow keys to navigate..."
+              required
+              autoComplete="off"
+              className="full-name-input input-glow"
+            />
+            {showSuggestions && suggestions.length > 0 && (
+              <div className="suggestions-dropdown fade-in-up" ref={suggestionsRef}>
+                {suggestions.map((member, index) => (
+                  <div
+                    key={member._id}
+                    className={`suggestion-item ${index === selectedIndex ? 'selected slide-left' : ''}`}
+                    onClick={() => handleSelectSuggestion(member)}
+                    onMouseEnter={() => setSelectedIndex(index)}
+                  >
+                    <div className="suggestion-name">{member.fullName}</div>
+                    <div className="suggestion-details">
+                      <span className="suggestion-leader">{member.cellgroupLeader}</span>
+                      <span className="suggestion-separator">•</span>
+                      <span className="suggestion-age">{member.age} yrs</span>
+                      <span className="suggestion-separator">•</span>
+                      <span className="suggestion-gender">{member.gender}</span>
                     </div>
-                  ))}
-                  <div className="suggestion-footer">
-                    <span className="keyboard-hint pulse-text">
-                      ↑↓ to navigate • Enter to select • Esc to close
-                    </span>
                   </div>
+                ))}
+                <div className="suggestion-footer">
+                  <span className="keyboard-hint pulse-text">
+                    ↑↓ to navigate • Enter to select • Esc to close
+                  </span>
                 </div>
-              )}
-            </div>
-
-            <div className="form-row">
-              <div className="form-group floating-label-group">
-                <label className="animated-label">Gender</label>
-                <select
-                  name="gender"
-                  value={formData.gender}
-                  onChange={handleChange}
-                  required
-                  className="form-select input-glow"
-                >
-                  <option value="">Select gender</option>
-                  <option value="Male">Male</option>
-                  <option value="Female">Female</option>
-                </select>
               </div>
+            )}
+          </div>
 
-              <div className="form-group floating-label-group">
-                <label className="animated-label">Age</label>
-                <input
-                  type="number"
-                  name="age"
-                  value={formData.age}
-                  onChange={handleChange}
-                  placeholder="Enter age"
-                  required
-                  className="form-input input-glow"
-                />
-              </div>
+          <div className="form-row">
+            <div className="form-group floating-label-group">
+              <label className="animated-label">Gender</label>
+              <select
+                name="gender"
+                value={formData.gender}
+                onChange={handleChange}
+                required
+                className="form-select input-glow"
+              >
+                <option value="">Select gender</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+              </select>
             </div>
 
             <div className="form-group floating-label-group">
-              <label className="animated-label">Address</label>
+              <label className="animated-label">Age</label>
+              <input
+                type="number"
+                name="age"
+                value={formData.age}
+                onChange={handleChange}
+                placeholder="Enter age"
+                required
+                className="form-input input-glow"
+              />
+            </div>
+          </div>
+
+          <div className="form-group floating-label-group">
+            <label className="animated-label">Address</label>
+            <input
+              type="text"
+              name="address"
+              value={formData.address}
+              onChange={handleChange}
+              placeholder="Enter complete address"
+              required
+              className="form-input input-glow"
+            />
+          </div>
+
+          <div className="form-row">
+            <div className="form-group floating-label-group">
+              <label className="animated-label">Contact No</label>
               <input
                 type="text"
-                name="address"
-                value={formData.address}
+                name="contactNo"
+                value={formData.contactNo}
                 onChange={handleChange}
-                placeholder="Enter complete address"
+                placeholder="Enter contact number"
                 required
                 className="form-input input-glow"
               />
             </div>
 
-            <div className="form-row">
-              <div className="form-group floating-label-group">
-                <label className="animated-label">Contact No</label>
-                <input
-                  type="text"
-                  name="contactNo"
-                  value={formData.contactNo}
-                  onChange={handleChange}
-                  placeholder="Enter contact number"
-                  required
-                  className="form-input input-glow"
-                />
-              </div>
-
-              <div className="form-group floating-label-group">
-                <label className="animated-label">Cellgroup Leader</label>
-                <input
-                  type="text"
-                  name="cellgroupLeader"
-                  value={formData.cellgroupLeader}
-                  onChange={handleChange}
-                  placeholder="Enter cellgroup leader name"
-                  required
-                  className="form-input input-glow"
-                />
-              </div>
-            </div>
-
-            <div className="button-group">
-              <button type="submit" className="btn-primary btn-pulse" disabled={loading}>
-                {loading ? (
-                  <span className="loading-spinner">
-                    <span className="spinner"></span> 
-                    Adding{bouncingDots}
-                  </span>
-                ) : (
-                  <span className="btn-text">
-                    <span className="btn-icon">✓</span> Add Attendance
-                  </span>
-                )}
-              </button>
-              <button type="button" className="btn-secondary btn-hover" onClick={() => navigate('/')}>
-                Cancel
-              </button>
-            </div>
-          </form>
-
-          {/* Stats Counter */}
-          <div className="stats-counter">
-            <div className="stat-item">
-              <span className="stat-number">{allMembers.length}</span>
-              <span className="stat-label">Total Members</span>
-            </div>
-            <div className="stat-divider"></div>
-            <div className="stat-item">
-              <span className="stat-number">{allMembers.filter(m => m.status === 'Active').length}</span>
-              <span className="stat-label">Active Members</span>
+            <div className="form-group floating-label-group">
+              <label className="animated-label">Cellgroup Leader</label>
+              <input
+                type="text"
+                name="cellgroupLeader"
+                value={formData.cellgroupLeader}
+                onChange={handleChange}
+                placeholder="Enter cellgroup leader name"
+                required
+                className="form-input input-glow"
+              />
             </div>
           </div>
+
+          <div className="button-group">
+            <button type="submit" className="btn-primary btn-pulse" disabled={loading}>
+              {loading ? (
+                <span className="loading-spinner">
+                  <span className="spinner"></span> 
+                  Adding{bouncingDots}
+                </span>
+              ) : (
+                <span className="btn-text">
+                  <span className="btn-icon">✓</span> Add Attendance
+                </span>
+              )}
+            </button>
+            <button type="button" className="btn-secondary btn-hover" onClick={() => navigate('/')}>
+              Cancel
+            </button>
+          </div>
+        </form>
+
+        {/* Animated helper text */}
+        <div className="helper-text">
+          <div className="typing-animation">Ready to record attendance...</div>
         </div>
       </div>
     </div>
