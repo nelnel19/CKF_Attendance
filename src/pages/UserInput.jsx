@@ -24,9 +24,28 @@ const UserInput = () => {
   const [allMembers, setAllMembers] = useState([]);
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const [bouncingDots, setBouncingDots] = useState('');
+  const [currentSlide, setCurrentSlide] = useState(0);
   
   const fullNameInputRef = useRef(null);
   const suggestionsRef = useRef(null);
+
+  // Carousel images
+  const carouselImages = [
+    '/pic1.JPG',
+    '/pic2.JPG',
+    '/pic3.JPG',
+    '/pic4.JPG',
+    '/pic5.JPG'
+  ];
+
+  // Auto-rotate carousel with smooth transition
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % carouselImages.length);
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [carouselImages.length]);
 
   useEffect(() => {
     let interval;
@@ -294,57 +313,47 @@ const UserInput = () => {
         </div>
       </div>
 
-      {/* RIGHT SIDE - ANIMATED VISUAL */}
+      {/* RIGHT SIDE - SMOOTH SLIDESHOW */}
       <div className="visual-side">
-        <div className="visual-content">
-          {/* Animated Cross */}
-          <div className="cross-wrapper">
-            <div className="cross-glow"></div>
-            <svg className="animated-cross" viewBox="0 0 100 100">
-              <line x1="50" y1="15" x2="50" y2="85" stroke="#CBB38F" strokeWidth="5" strokeLinecap="round">
-                <animate attributeName="y1" values="15;25;15" dur="2s" repeatCount="indefinite" />
-                <animate attributeName="y2" values="85;75;85" dur="2s" repeatCount="indefinite" />
-              </line>
-              <line x1="25" y1="50" x2="75" y2="50" stroke="#CBB38F" strokeWidth="5" strokeLinecap="round">
-                <animate attributeName="x1" values="25;35;25" dur="2s" repeatCount="indefinite" />
-                <animate attributeName="x2" values="75;65;75" dur="2s" repeatCount="indefinite" />
-              </line>
-            </svg>
+        <div className="slideshow-container">
+          {carouselImages.map((img, index) => (
+            <div
+              key={index}
+              className={`slide ${index === currentSlide ? 'active' : ''}`}
+              style={{ backgroundImage: `url(${img})` }}
+            >
+              <div className="slide-overlay">
+                <div className="slide-content">
+                  <h2>Christ the King Fellowship</h2>
+                  <p>Building lives, sharing God's love</p>
+                  <div className="verse">"For where two or three gather in my name, there am I with them."</div>
+                  <div className="verse-ref">— Matthew 18:20</div>
+                </div>
+              </div>
+            </div>
+          ))}
+          
+          {/* Dots Indicator */}
+          <div className="slideshow-dots">
+            {carouselImages.map((_, index) => (
+              <div
+                key={index}
+                className={`dot ${index === currentSlide ? 'active' : ''}`}
+              />
+            ))}
           </div>
 
-          {/* Rotating Rings */}
-          <div className="rings">
-            <div className="ring r1"></div>
-            <div className="ring r2"></div>
-            <div className="ring r3"></div>
-          </div>
-
-          {/* Welcome Text */}
-          <div className="welcome-text">
-            <h2>Christ's Kerusso Fellowship</h2>
-            <h3>Fellowship</h3>
-            <p>"Where two or three gather in my name, there am I with them."</p>
-            <span>— Matthew 18:20</span>
-          </div>
-
-          {/* Stats */}
-          <div className="stats">
-            <div className="stat">
-              <div className="stat-num">{allMembers.length}</div>
+          {/* Stats Overlay */}
+          <div className="stats-overlay">
+            <div className="stat-item">
+              <div className="stat-number">{allMembers.length}</div>
               <div className="stat-label">Total Members</div>
             </div>
             <div className="stat-divider"></div>
-            <div className="stat">
-              <div className="stat-num">{allMembers.filter(m => m.status === 'Active').length}</div>
-              <div className="stat-label">Active</div>
+            <div className="stat-item">
+              <div className="stat-number">{allMembers.filter(m => m.status === 'Active').length}</div>
+              <div className="stat-label">Active Members</div>
             </div>
-          </div>
-
-          {/* Floating Elements */}
-          <div className="floating-elements">
-            <div className="float-el e1">✝</div>
-            <div className="float-el e2">⛪</div>
-            <div className="float-el e3">🙏</div>
           </div>
         </div>
       </div>
