@@ -28,7 +28,6 @@ const UserInput = () => {
   const fullNameInputRef = useRef(null);
   const suggestionsRef = useRef(null);
 
-  // Animated dots effect while loading
   useEffect(() => {
     let interval;
     if (loading) {
@@ -46,7 +45,6 @@ const UserInput = () => {
     return () => clearInterval(interval);
   }, [loading]);
 
-  // Fetch all CKF members on component mount
   useEffect(() => {
     const fetchMembers = async () => {
       try {
@@ -59,7 +57,6 @@ const UserInput = () => {
     fetchMembers();
   }, []);
 
-  // Handle full name input change and search for matches
   const handleNameChange = (e) => {
     const { value } = e.target;
     setFormData(prev => ({ ...prev, fullName: value }));
@@ -68,7 +65,7 @@ const UserInput = () => {
     if (value.trim().length > 2) {
       const matches = allMembers.filter(member => 
         member.fullName.toLowerCase().includes(value.toLowerCase())
-      ).slice(0, 8);
+      ).slice(0, 6);
       
       setSuggestions(matches);
       setShowSuggestions(matches.length > 0);
@@ -78,47 +75,34 @@ const UserInput = () => {
     }
   };
 
-  // Handle keyboard navigation
   const handleKeyDown = (e) => {
     if (!showSuggestions || suggestions.length === 0) return;
 
     switch (e.key) {
       case 'ArrowDown':
         e.preventDefault();
-        setSelectedIndex(prev => 
-          prev < suggestions.length - 1 ? prev + 1 : prev
-        );
+        setSelectedIndex(prev => prev < suggestions.length - 1 ? prev + 1 : prev);
         break;
-      
       case 'ArrowUp':
         e.preventDefault();
         setSelectedIndex(prev => prev > 0 ? prev - 1 : -1);
         break;
-      
       case 'Enter':
         e.preventDefault();
         if (selectedIndex >= 0 && selectedIndex < suggestions.length) {
           handleSelectSuggestion(suggestions[selectedIndex]);
         }
         break;
-      
       case 'Escape':
         e.preventDefault();
         setShowSuggestions(false);
         setSelectedIndex(-1);
         break;
-      
-      case 'Tab':
-        setShowSuggestions(false);
-        setSelectedIndex(-1);
-        break;
-      
       default:
         break;
     }
   };
 
-  // Scroll selected item into view
   useEffect(() => {
     if (selectedIndex >= 0 && suggestionsRef.current) {
       const selectedElement = suggestionsRef.current.children[selectedIndex];
@@ -128,7 +112,6 @@ const UserInput = () => {
     }
   }, [selectedIndex]);
 
-  // Auto-fill form when a suggestion is selected
   const handleSelectSuggestion = (member) => {
     setFormData({
       fullName: member.fullName,
@@ -194,7 +177,6 @@ const UserInput = () => {
     }
   };
 
-  // Close suggestions when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (fullNameInputRef.current && !fullNameInputRef.current.contains(event.target)) {
@@ -220,14 +202,14 @@ const UserInput = () => {
           </div>
 
           <div className="form-card">
-            {error && <div className="error-message shake-animation">{error}</div>}
-            {success && <div className="success-message slide-in">{success}</div>}
+            {error && <div className="error-message">{error}</div>}
+            {success && <div className="success-message">{success}</div>}
 
             <form onSubmit={handleSubmit}>
               <div className="form-group" style={{ position: 'relative' }} ref={fullNameInputRef}>
                 <label className="form-label">
                   Full Name 
-                  <span className="auto-fill-hint">(Start typing to see suggestions)</span>
+                  <span className="auto-fill-hint">(Start typing)</span>
                 </label>
                 <input
                   type="text"
@@ -235,7 +217,7 @@ const UserInput = () => {
                   value={formData.fullName}
                   onChange={handleNameChange}
                   onKeyDown={handleKeyDown}
-                  placeholder="Type name or use arrow keys to navigate..."
+                  placeholder="Type name to search..."
                   required
                   autoComplete="off"
                   className="form-input-field"
@@ -252,15 +234,13 @@ const UserInput = () => {
                         <div className="suggestion-name">{member.fullName}</div>
                         <div className="suggestion-details">
                           <span>{member.cellgroupLeader}</span>
-                          <span className="dot">•</span>
+                          <span>•</span>
                           <span>{member.age} yrs</span>
-                          <span className="dot">•</span>
-                          <span>{member.gender}</span>
                         </div>
                       </div>
                     ))}
                     <div className="suggestion-footer">
-                      ↑↓ to navigate • Enter to select • Esc to close
+                      ↑↓ • Enter • Esc
                     </div>
                   </div>
                 )}
@@ -269,14 +249,8 @@ const UserInput = () => {
               <div className="form-row">
                 <div className="form-group">
                   <label className="form-label">Gender</label>
-                  <select
-                    name="gender"
-                    value={formData.gender}
-                    onChange={handleChange}
-                    required
-                    className="form-select-field"
-                  >
-                    <option value="">Select gender</option>
+                  <select name="gender" value={formData.gender} onChange={handleChange} required className="form-select-field">
+                    <option value="">Select</option>
                     <option value="Male">Male</option>
                     <option value="Female">Female</option>
                   </select>
@@ -284,74 +258,36 @@ const UserInput = () => {
 
                 <div className="form-group">
                   <label className="form-label">Age</label>
-                  <input
-                    type="number"
-                    name="age"
-                    value={formData.age}
-                    onChange={handleChange}
-                    placeholder="Enter age"
-                    required
-                    className="form-input-field"
-                  />
+                  <input type="number" name="age" value={formData.age} onChange={handleChange} placeholder="Age" required className="form-input-field" />
                 </div>
               </div>
 
               <div className="form-group">
                 <label className="form-label">Address</label>
-                <input
-                  type="text"
-                  name="address"
-                  value={formData.address}
-                  onChange={handleChange}
-                  placeholder="Enter complete address"
-                  required
-                  className="form-input-field"
-                />
+                <input type="text" name="address" value={formData.address} onChange={handleChange} placeholder="Complete address" required className="form-input-field" />
               </div>
 
               <div className="form-row">
                 <div className="form-group">
                   <label className="form-label">Contact No</label>
-                  <input
-                    type="text"
-                    name="contactNo"
-                    value={formData.contactNo}
-                    onChange={handleChange}
-                    placeholder="Enter contact number"
-                    required
-                    className="form-input-field"
-                  />
+                  <input type="text" name="contactNo" value={formData.contactNo} onChange={handleChange} placeholder="Contact number" required className="form-input-field" />
                 </div>
 
                 <div className="form-group">
                   <label className="form-label">Cellgroup Leader</label>
-                  <input
-                    type="text"
-                    name="cellgroupLeader"
-                    value={formData.cellgroupLeader}
-                    onChange={handleChange}
-                    placeholder="Enter cellgroup leader name"
-                    required
-                    className="form-input-field"
-                  />
+                  <input type="text" name="cellgroupLeader" value={formData.cellgroupLeader} onChange={handleChange} placeholder="Leader name" required className="form-input-field" />
                 </div>
               </div>
 
               <div className="button-group">
                 <button type="submit" className="btn-submit" disabled={loading}>
                   {loading ? (
-                    <span className="loading-spinner">
-                      <span className="spinner"></span> Adding{bouncingDots}
-                    </span>
+                    <span><span className="spinner"></span> Adding{bouncingDots}</span>
                   ) : (
-                    <>
-                      <span>✓</span> Add Attendance
-                    </>
+                    <>✓ Add Attendance</>
                   )}
                 </button>
-                <button type="button" className="btn-cancel" onClick={() => navigate('/')}>
-                  Cancel
-                </button>
+                <button type="button" className="btn-cancel" onClick={() => navigate('/')}>Cancel</button>
               </div>
             </form>
           </div>
@@ -362,66 +298,54 @@ const UserInput = () => {
       <div className="visual-side">
         <div className="visual-content">
           {/* Animated Cross */}
-          <div className="animated-cross-container">
-            <svg className="animated-cross" viewBox="0 0 100 100" width="120" height="120">
-              <line x1="50" y1="10" x2="50" y2="90" stroke="#CBB38F" strokeWidth="6" strokeLinecap="round">
-                <animate attributeName="y1" values="10;20;10" dur="2s" repeatCount="indefinite" />
-                <animate attributeName="y2" values="90;80;90" dur="2s" repeatCount="indefinite" />
+          <div className="cross-wrapper">
+            <div className="cross-glow"></div>
+            <svg className="animated-cross" viewBox="0 0 100 100">
+              <line x1="50" y1="15" x2="50" y2="85" stroke="#CBB38F" strokeWidth="5" strokeLinecap="round">
+                <animate attributeName="y1" values="15;25;15" dur="2s" repeatCount="indefinite" />
+                <animate attributeName="y2" values="85;75;85" dur="2s" repeatCount="indefinite" />
               </line>
-              <line x1="20" y1="50" x2="80" y2="50" stroke="#CBB38F" strokeWidth="6" strokeLinecap="round">
-                <animate attributeName="x1" values="20;30;20" dur="2s" repeatCount="indefinite" />
-                <animate attributeName="x2" values="80;70;80" dur="2s" repeatCount="indefinite" />
+              <line x1="25" y1="50" x2="75" y2="50" stroke="#CBB38F" strokeWidth="5" strokeLinecap="round">
+                <animate attributeName="x1" values="25;35;25" dur="2s" repeatCount="indefinite" />
+                <animate attributeName="x2" values="75;65;75" dur="2s" repeatCount="indefinite" />
               </line>
             </svg>
           </div>
 
           {/* Rotating Rings */}
-          <div className="rings-container">
-            <div className="ring ring-1"></div>
-            <div className="ring ring-2"></div>
-            <div className="ring ring-3"></div>
+          <div className="rings">
+            <div className="ring r1"></div>
+            <div className="ring r2"></div>
+            <div className="ring r3"></div>
           </div>
 
-          {/* Floating Orbs */}
-          <div className="orbs-container">
-            <div className="orb orb-1"></div>
-            <div className="orb orb-2"></div>
-            <div className="orb orb-3"></div>
-            <div className="orb orb-4"></div>
-            <div className="orb orb-5"></div>
+          {/* Welcome Text */}
+          <div className="welcome-text">
+            <h2>Christ the King</h2>
+            <h3>Fellowship</h3>
+            <p>"Where two or three gather in my name, there am I with them."</p>
+            <span>— Matthew 18:20</span>
           </div>
 
-          {/* Welcome Message */}
-          <div className="welcome-message">
-            <h2 className="welcome-title">Welcome to CKF</h2>
-            <p className="welcome-subtitle">Christ the King Fellowship</p>
-            <div className="verse-display">
-              <p className="verse-text">"For where two or three gather in my name, there am I with them."</p>
-              <p className="verse-ref">— Matthew 18:20</p>
+          {/* Stats */}
+          <div className="stats">
+            <div className="stat">
+              <div className="stat-num">{allMembers.length}</div>
+              <div className="stat-label">Total Members</div>
+            </div>
+            <div className="stat-divider"></div>
+            <div className="stat">
+              <div className="stat-num">{allMembers.filter(m => m.status === 'Active').length}</div>
+              <div className="stat-label">Active</div>
             </div>
           </div>
 
-          {/* Stats Cards */}
-          <div className="stats-cards">
-            <div className="stat-card">
-              <div className="stat-number-animated">{allMembers.length}</div>
-              <div className="stat-label-animated">Total Members</div>
-            </div>
-            <div className="stat-card">
-              <div className="stat-number-animated">{allMembers.filter(m => m.status === 'Active').length}</div>
-              <div className="stat-label-animated">Active Members</div>
-            </div>
+          {/* Floating Elements */}
+          <div className="floating-elements">
+            <div className="float-el e1">✝</div>
+            <div className="float-el e2">⛪</div>
+            <div className="float-el e3">🙏</div>
           </div>
-
-          {/* Animated Doves */}
-          <div className="doves">
-            <div className="dove dove-1">🕊️</div>
-            <div className="dove dove-2">🕊️</div>
-            <div className="dove dove-3">🕊️</div>
-          </div>
-
-          {/* Pulsing Light */}
-          <div className="pulsing-light"></div>
         </div>
       </div>
     </div>
