@@ -34,8 +34,8 @@ const UserInput = () => {
     '/pic1.JPG',
     '/pic2.JPG',
     '/pic3.JPG',
-    '/pic4.JPG',
-    '/pic5.JPG'
+    '/pic5.JPG',
+    '/pic4.JPG'
   ];
 
   // Auto-rotate carousel with smooth transition
