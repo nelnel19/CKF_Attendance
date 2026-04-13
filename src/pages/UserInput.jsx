@@ -46,15 +46,6 @@ const UserInput = () => {
     return () => clearInterval(interval);
   }, [loading]);
 
-  // Age category function
-  const getAgeCategory = (age) => {
-    if (age >= 1 && age <= 12) return 'Kids';
-    if (age >= 13 && age <= 22) return 'Youth';
-    if (age >= 23 && age <= 39) return 'Young Adult';
-    if (age >= 40) return 'Adult';
-    return 'Unknown';
-  };
-
   // Fetch all CKF members on component mount
   useEffect(() => {
     const fetchMembers = async () => {
@@ -219,172 +210,218 @@ const UserInput = () => {
   }, []);
 
   return (
-    <div className="user-input-container">
-      {/* Animated Background with particles */}
-      <div className="animated-bg">
-        <div className="particles">
-          {[...Array(20)].map((_, i) => (
-            <div key={i} className="particle" style={{
-              '--delay': `${i * 0.5}s`,
-              '--duration': `${5 + Math.random() * 5}s`,
-              '--start-x': `${Math.random() * 100}%`,
-              '--end-x': `${Math.random() * 100}%`,
-            }}></div>
-          ))}
-        </div>
-        <div className="bg-shape shape-1"></div>
-        <div className="bg-shape shape-2"></div>
-        <div className="bg-shape shape-3"></div>
-      </div>
+    <div className="split-layout">
+      {/* LEFT SIDE - FORM */}
+      <div className="form-side">
+        <div className="form-container">
+          <div className="header">
+            <img src="/ckflogo.jpg" alt="CKF Logo" className="custom-logo-img" />
+            <h1 className="title">Attendance</h1>
+          </div>
 
-      {/* Header with Logo */}
-      <div className="header">
-        <img src="/ckflogo.jpg" alt="CKF Logo" className="custom-logo-img floating-logo" />
-        <h1 className="title gradient-text">Attendance</h1>
-      </div>
+          <div className="form-card">
+            {error && <div className="error-message shake-animation">{error}</div>}
+            {success && <div className="success-message slide-in">{success}</div>}
 
-      <div className="form-card">
-        {error && <div className="error-message shake-animation">{error}</div>}
-        {success && <div className="success-message slide-in">{success}</div>}
-
-        <form onSubmit={handleSubmit}>
-          <div className="form-group floating-label-group" style={{ position: 'relative' }} ref={fullNameInputRef}>
-            <label className="animated-label">
-              Full Name 
-              <span className="auto-fill-hint pulse-hint">(Start typing to see suggestions)</span>
-            </label>
-            <input
-              type="text"
-              name="fullName"
-              value={formData.fullName}
-              onChange={handleNameChange}
-              onKeyDown={handleKeyDown}
-              placeholder="Type name or use arrow keys to navigate..."
-              required
-              autoComplete="off"
-              className="full-name-input input-glow"
-            />
-            {showSuggestions && suggestions.length > 0 && (
-              <div className="suggestions-dropdown fade-in-up" ref={suggestionsRef}>
-                {suggestions.map((member, index) => (
-                  <div
-                    key={member._id}
-                    className={`suggestion-item ${index === selectedIndex ? 'selected slide-left' : ''}`}
-                    onClick={() => handleSelectSuggestion(member)}
-                    onMouseEnter={() => setSelectedIndex(index)}
-                  >
-                    <div className="suggestion-name">{member.fullName}</div>
-                    <div className="suggestion-details">
-                      <span className="suggestion-leader">{member.cellgroupLeader}</span>
-                      <span className="suggestion-separator">•</span>
-                      <span className="suggestion-age">{member.age} yrs</span>
-                      <span className="suggestion-separator">•</span>
-                      <span className="suggestion-gender">{member.gender}</span>
+            <form onSubmit={handleSubmit}>
+              <div className="form-group" style={{ position: 'relative' }} ref={fullNameInputRef}>
+                <label className="form-label">
+                  Full Name 
+                  <span className="auto-fill-hint">(Start typing to see suggestions)</span>
+                </label>
+                <input
+                  type="text"
+                  name="fullName"
+                  value={formData.fullName}
+                  onChange={handleNameChange}
+                  onKeyDown={handleKeyDown}
+                  placeholder="Type name or use arrow keys to navigate..."
+                  required
+                  autoComplete="off"
+                  className="form-input-field"
+                />
+                {showSuggestions && suggestions.length > 0 && (
+                  <div className="suggestions-dropdown" ref={suggestionsRef}>
+                    {suggestions.map((member, index) => (
+                      <div
+                        key={member._id}
+                        className={`suggestion-item ${index === selectedIndex ? 'selected' : ''}`}
+                        onClick={() => handleSelectSuggestion(member)}
+                        onMouseEnter={() => setSelectedIndex(index)}
+                      >
+                        <div className="suggestion-name">{member.fullName}</div>
+                        <div className="suggestion-details">
+                          <span>{member.cellgroupLeader}</span>
+                          <span className="dot">•</span>
+                          <span>{member.age} yrs</span>
+                          <span className="dot">•</span>
+                          <span>{member.gender}</span>
+                        </div>
+                      </div>
+                    ))}
+                    <div className="suggestion-footer">
+                      ↑↓ to navigate • Enter to select • Esc to close
                     </div>
                   </div>
-                ))}
-                <div className="suggestion-footer">
-                  <span className="keyboard-hint pulse-text">
-                    ↑↓ to navigate • Enter to select • Esc to close
-                  </span>
+                )}
+              </div>
+
+              <div className="form-row">
+                <div className="form-group">
+                  <label className="form-label">Gender</label>
+                  <select
+                    name="gender"
+                    value={formData.gender}
+                    onChange={handleChange}
+                    required
+                    className="form-select-field"
+                  >
+                    <option value="">Select gender</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                  </select>
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">Age</label>
+                  <input
+                    type="number"
+                    name="age"
+                    value={formData.age}
+                    onChange={handleChange}
+                    placeholder="Enter age"
+                    required
+                    className="form-input-field"
+                  />
                 </div>
               </div>
-            )}
+
+              <div className="form-group">
+                <label className="form-label">Address</label>
+                <input
+                  type="text"
+                  name="address"
+                  value={formData.address}
+                  onChange={handleChange}
+                  placeholder="Enter complete address"
+                  required
+                  className="form-input-field"
+                />
+              </div>
+
+              <div className="form-row">
+                <div className="form-group">
+                  <label className="form-label">Contact No</label>
+                  <input
+                    type="text"
+                    name="contactNo"
+                    value={formData.contactNo}
+                    onChange={handleChange}
+                    placeholder="Enter contact number"
+                    required
+                    className="form-input-field"
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">Cellgroup Leader</label>
+                  <input
+                    type="text"
+                    name="cellgroupLeader"
+                    value={formData.cellgroupLeader}
+                    onChange={handleChange}
+                    placeholder="Enter cellgroup leader name"
+                    required
+                    className="form-input-field"
+                  />
+                </div>
+              </div>
+
+              <div className="button-group">
+                <button type="submit" className="btn-submit" disabled={loading}>
+                  {loading ? (
+                    <span className="loading-spinner">
+                      <span className="spinner"></span> Adding{bouncingDots}
+                    </span>
+                  ) : (
+                    <>
+                      <span>✓</span> Add Attendance
+                    </>
+                  )}
+                </button>
+                <button type="button" className="btn-cancel" onClick={() => navigate('/')}>
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      {/* RIGHT SIDE - ANIMATED VISUAL */}
+      <div className="visual-side">
+        <div className="visual-content">
+          {/* Animated Cross */}
+          <div className="animated-cross-container">
+            <svg className="animated-cross" viewBox="0 0 100 100" width="120" height="120">
+              <line x1="50" y1="10" x2="50" y2="90" stroke="#CBB38F" strokeWidth="6" strokeLinecap="round">
+                <animate attributeName="y1" values="10;20;10" dur="2s" repeatCount="indefinite" />
+                <animate attributeName="y2" values="90;80;90" dur="2s" repeatCount="indefinite" />
+              </line>
+              <line x1="20" y1="50" x2="80" y2="50" stroke="#CBB38F" strokeWidth="6" strokeLinecap="round">
+                <animate attributeName="x1" values="20;30;20" dur="2s" repeatCount="indefinite" />
+                <animate attributeName="x2" values="80;70;80" dur="2s" repeatCount="indefinite" />
+              </line>
+            </svg>
           </div>
 
-          <div className="form-row">
-            <div className="form-group floating-label-group">
-              <label className="animated-label">Gender</label>
-              <select
-                name="gender"
-                value={formData.gender}
-                onChange={handleChange}
-                required
-                className="form-select input-glow"
-              >
-                <option value="">Select gender</option>
-                <option value="Male">Male</option>
-                <option value="Female">Female</option>
-              </select>
+          {/* Rotating Rings */}
+          <div className="rings-container">
+            <div className="ring ring-1"></div>
+            <div className="ring ring-2"></div>
+            <div className="ring ring-3"></div>
+          </div>
+
+          {/* Floating Orbs */}
+          <div className="orbs-container">
+            <div className="orb orb-1"></div>
+            <div className="orb orb-2"></div>
+            <div className="orb orb-3"></div>
+            <div className="orb orb-4"></div>
+            <div className="orb orb-5"></div>
+          </div>
+
+          {/* Welcome Message */}
+          <div className="welcome-message">
+            <h2 className="welcome-title">Welcome to CKF</h2>
+            <p className="welcome-subtitle">Christ the King Fellowship</p>
+            <div className="verse-display">
+              <p className="verse-text">"For where two or three gather in my name, there am I with them."</p>
+              <p className="verse-ref">— Matthew 18:20</p>
             </div>
+          </div>
 
-            <div className="form-group floating-label-group">
-              <label className="animated-label">Age</label>
-              <input
-                type="number"
-                name="age"
-                value={formData.age}
-                onChange={handleChange}
-                placeholder="Enter age"
-                required
-                className="form-input input-glow"
-              />
+          {/* Stats Cards */}
+          <div className="stats-cards">
+            <div className="stat-card">
+              <div className="stat-number-animated">{allMembers.length}</div>
+              <div className="stat-label-animated">Total Members</div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-number-animated">{allMembers.filter(m => m.status === 'Active').length}</div>
+              <div className="stat-label-animated">Active Members</div>
             </div>
           </div>
 
-          <div className="form-group floating-label-group">
-            <label className="animated-label">Address</label>
-            <input
-              type="text"
-              name="address"
-              value={formData.address}
-              onChange={handleChange}
-              placeholder="Enter complete address"
-              required
-              className="form-input input-glow"
-            />
+          {/* Animated Doves */}
+          <div className="doves">
+            <div className="dove dove-1">🕊️</div>
+            <div className="dove dove-2">🕊️</div>
+            <div className="dove dove-3">🕊️</div>
           </div>
 
-          <div className="form-row">
-            <div className="form-group floating-label-group">
-              <label className="animated-label">Contact No</label>
-              <input
-                type="text"
-                name="contactNo"
-                value={formData.contactNo}
-                onChange={handleChange}
-                placeholder="Enter contact number"
-                required
-                className="form-input input-glow"
-              />
-            </div>
-
-            <div className="form-group floating-label-group">
-              <label className="animated-label">Cellgroup Leader</label>
-              <input
-                type="text"
-                name="cellgroupLeader"
-                value={formData.cellgroupLeader}
-                onChange={handleChange}
-                placeholder="Enter cellgroup leader name"
-                required
-                className="form-input input-glow"
-              />
-            </div>
-          </div>
-
-          <div className="button-group">
-            <button type="submit" className="btn-primary btn-pulse" disabled={loading}>
-              {loading ? (
-                <span className="loading-spinner">
-                  <span className="spinner"></span> 
-                  Adding{bouncingDots}
-                </span>
-              ) : (
-                <span className="btn-text">
-                  <span className="btn-icon">✓</span> Add Attendance
-                </span>
-              )}
-            </button>
-            <button type="button" className="btn-secondary btn-hover" onClick={() => navigate('/')}>
-              Cancel
-            </button>
-          </div>
-        </form>
-
-        {/* Animated helper text */}
-        <div className="helper-text">
-          <div className="typing-animation">Ready to record attendance...</div>
+          {/* Pulsing Light */}
+          <div className="pulsing-light"></div>
         </div>
       </div>
     </div>
