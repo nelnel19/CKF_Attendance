@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useLayoutEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import * as XLSX from 'xlsx';
@@ -7,6 +7,33 @@ import '../styles/userlists.css';
 const API_URL = 'https://ckf-attendance-backend.onrender.com/api/users';
 const CKF_MEMBERS_URL = 'https://ckf-attendance-backend.onrender.com/api/ckf-members';
 const CONSOLIDATION_URL = 'https://ckf-attendance-backend.onrender.com/api/consolidation';
+
+// Animates a number counting up from 0 to its target whenever the value changes.
+const AnimatedStat = ({ value, suffix = '' }) => {
+  const [display, setDisplay] = useState(0);
+
+  useEffect(() => {
+    const target = Number(value) || 0;
+    const duration = 600;
+    let start = null;
+    let frameId;
+
+    const step = (timestamp) => {
+      if (start === null) start = timestamp;
+      const progress = Math.min((timestamp - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setDisplay(Math.round(target * eased));
+      if (progress < 1) {
+        frameId = requestAnimationFrame(step);
+      }
+    };
+
+    frameId = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(frameId);
+  }, [value]);
+
+  return <>{display}{suffix}</>;
+};
 
 const UserLists = () => {
   const [activeTab, setActiveTab] = useState('attendance'); // 'attendance', 'members', or 'consolidation'
@@ -78,6 +105,22 @@ const UserLists = () => {
   const [selectedMembers, setSelectedMembers] = useState([]);
   const [addingConsolidation, setAddingConsolidation] = useState(false);
   const [consolidationAddError, setConsolidationAddError] = useState('');
+
+  // Sliding tab indicator
+  const tabRefs = useRef({});
+  const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0 });
+
+  useLayoutEffect(() => {
+    const updateIndicator = () => {
+      const el = tabRefs.current[activeTab];
+      if (el) {
+        setIndicatorStyle({ left: el.offsetLeft, width: el.offsetWidth });
+      }
+    };
+    updateIndicator();
+    window.addEventListener('resize', updateIndicator);
+    return () => window.removeEventListener('resize', updateIndicator);
+  }, [activeTab]);
 
   // Age category function
   const getAgeCategory = (age) => {
@@ -803,23 +846,30 @@ const UserLists = () => {
 
       <div className="tabs">
         <button
+          ref={(el) => (tabRefs.current.attendance = el)}
           className={`tab-button ${activeTab === 'attendance' ? 'active' : ''}`}
           onClick={() => setActiveTab('attendance')}
         >
           Attendance Records
         </button>
         <button
+          ref={(el) => (tabRefs.current.members = el)}
           className={`tab-button ${activeTab === 'members' ? 'active' : ''}`}
           onClick={() => setActiveTab('members')}
         >
           CKF Members Directory
         </button>
         <button
+          ref={(el) => (tabRefs.current.consolidation = el)}
           className={`tab-button ${activeTab === 'consolidation' ? 'active' : ''}`}
           onClick={() => setActiveTab('consolidation')}
         >
           Consolidation
         </button>
+        <div
+          className="tab-indicator"
+          style={{ left: `${indicatorStyle.left}px`, width: `${indicatorStyle.width}px` }}
+        ></div>
       </div>
 
       {activeTab === 'attendance' && (
@@ -912,8 +962,8 @@ const UserLists = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {filteredUsers.map(user => (
-                      <tr key={user._id}>
+                    {filteredUsers.map((user, i) => (
+                      <tr key={user._id} style={{ '--row-i': Math.min(i, 20) }}>
                         <td>{user.fullName}</td>
                         <td>{user.gender || '-'}</td>
                         <td>{user.age}</td>
@@ -1025,8 +1075,8 @@ const UserLists = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {filteredMembers.map(member => (
-                      <tr key={member._id}>
+                    {filteredMembers.map((member, i) => (
+                      <tr key={member._id} style={{ '--row-i': Math.min(i, 20) }}>
                         <td>{member.fullName}</td>
                         <td>{member.gender || '-'}</td>
                         <td>{member.age}</td>
@@ -1136,8 +1186,8 @@ const UserLists = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {filteredConsolidation.map(record => (
-                      <tr key={record._id}>
+                    {filteredConsolidation.map((record, i) => (
+                      <tr key={record._id} style={{ '--row-i': Math.min(i, 20) }}>
                         <td className="sticky-col">{record.fullName}</td>
                         <td className="sticky-col progress-cell">
                           <div className="progress-bar-container">
@@ -1234,19 +1284,19 @@ const UserLists = () => {
                     <div className="summary-stats">
                       <div className="stat-card">
                         <span className="stat-label">Kids (1-12)</span>
-                        <span className="stat-number">{summaryData.byCategory.Kids}</span>
+                        <span className="stat-number"><AnimatedStat value={summaryData.byCategory.Kids} /></span>
                       </div>
                       <div className="stat-card">
                         <span className="stat-label">Youth (13-22)</span>
-                        <span className="stat-number">{summaryData.byCategory.Youth}</span>
+                        <span className="stat-number"><AnimatedStat value={summaryData.byCategory.Youth} /></span>
                       </div>
                       <div className="stat-card">
                         <span className="stat-label">Young Adult (23-39)</span>
-                        <span className="stat-number">{summaryData.byCategory['Young Adult']}</span>
+                        <span className="stat-number"><AnimatedStat value={summaryData.byCategory['Young Adult']} /></span>
                       </div>
                       <div className="stat-card">
                         <span className="stat-label">Adult (40+)</span>
-                        <span className="stat-number">{summaryData.byCategory.Adult}</span>
+                        <span className="stat-number"><AnimatedStat value={summaryData.byCategory.Adult} /></span>
                       </div>
                     </div>
                   </div>
@@ -1256,11 +1306,11 @@ const UserLists = () => {
                     <div className="summary-stats">
                       <div className="stat-card">
                         <span className="stat-label">Male</span>
-                        <span className="stat-number">{summaryData.byGender.Male}</span>
+                        <span className="stat-number"><AnimatedStat value={summaryData.byGender.Male} /></span>
                       </div>
                       <div className="stat-card">
                         <span className="stat-label">Female</span>
-                        <span className="stat-number">{summaryData.byGender.Female}</span>
+                        <span className="stat-number"><AnimatedStat value={summaryData.byGender.Female} /></span>
                       </div>
                     </div>
                   </div>
@@ -1318,11 +1368,11 @@ const UserLists = () => {
                     <div className="summary-stats">
                       <div className="stat-card">
                         <span className="stat-label">Male</span>
-                        <span className="stat-number">{summaryData.byGender.Male}</span>
+                        <span className="stat-number"><AnimatedStat value={summaryData.byGender.Male} /></span>
                       </div>
                       <div className="stat-card">
                         <span className="stat-label">Female</span>
-                        <span className="stat-number">{summaryData.byGender.Female}</span>
+                        <span className="stat-number"><AnimatedStat value={summaryData.byGender.Female} /></span>
                       </div>
                     </div>
                   </div>
@@ -1332,15 +1382,15 @@ const UserLists = () => {
                     <div className="summary-stats">
                       <div className="stat-card">
                         <span className="stat-label">Active</span>
-                        <span className="stat-number">{summaryData.byStatus.Active}</span>
+                        <span className="stat-number"><AnimatedStat value={summaryData.byStatus.Active} /></span>
                       </div>
                       <div className="stat-card">
                         <span className="stat-label">Inactive</span>
-                        <span className="stat-number">{summaryData.byStatus.Inactive}</span>
+                        <span className="stat-number"><AnimatedStat value={summaryData.byStatus.Inactive} /></span>
                       </div>
                       <div className="stat-card">
                         <span className="stat-label">Pending</span>
-                        <span className="stat-number">{summaryData.byStatus.Pending}</span>
+                        <span className="stat-number"><AnimatedStat value={summaryData.byStatus.Pending} /></span>
                       </div>
                     </div>
                   </div>
@@ -1372,7 +1422,7 @@ const UserLists = () => {
                     <div className="summary-stats">
                       <div className="stat-card">
                         <span className="stat-label">Overall Completion</span>
-                        <span className="stat-number">{summaryData.overallProgress}%</span>
+                        <span className="stat-number"><AnimatedStat value={summaryData.overallProgress} suffix="%" /></span>
                       </div>
                     </div>
                   </div>
