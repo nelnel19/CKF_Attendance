@@ -203,7 +203,7 @@ const UserLists = () => {
       const completedLessons = consolidationColumns.filter(col => record[col] === true).length;
       const totalLessons = consolidationColumns.length;
       const progress = Math.round((completedLessons / totalLessons) * 100);
-      
+
       if (consolidationFilterProgress === 'completed') {
         matchProgress = progress === 100;
       } else if (consolidationFilterProgress === 'in-progress') {
@@ -236,7 +236,7 @@ const UserLists = () => {
   const generateSummary = () => {
     setSummaryType('attendance');
     const usersToSummarize = filterDate ? filteredUsers : users;
-    
+
     const summary = {
       total: usersToSummarize.length,
       byCategory: {
@@ -260,13 +260,13 @@ const UserLists = () => {
     usersToSummarize.forEach(user => {
       const category = getAgeCategory(user.age);
       const gender = user.gender || 'Other';
-      
+
       summary.byCategory[category]++;
-      
+
       if (gender === 'Male' || gender === 'Female') {
         summary.byGender[gender]++;
       }
-      
+
       if (summary.byCategoryAndGender[category] && (gender === 'Male' || gender === 'Female')) {
         summary.byCategoryAndGender[category][gender]++;
       }
@@ -297,11 +297,11 @@ const UserLists = () => {
       if (member.gender === 'Male' || member.gender === 'Female') {
         summary.byGender[member.gender]++;
       }
-      
+
       if (member.status) {
         summary.byStatus[member.status]++;
       }
-      
+
       const leader = member.cellgroupLeader || 'Unassigned';
       if (!summary.byCellgroup[leader]) {
         summary.byCellgroup[leader] = 0;
@@ -343,9 +343,9 @@ const UserLists = () => {
     if (!summaryData) return;
 
     const currentDate = new Date().toLocaleDateString();
-    
+
     let summaryRows = [];
-    
+
     if (summaryType === 'attendance') {
       const reportDate = filterDate || 'All Time';
       summaryRows = [
@@ -401,11 +401,11 @@ const UserLists = () => {
         ['BY CELLGROUP LEADER'],
         ['Cellgroup Leader', 'Count']
       ];
-      
+
       Object.entries(summaryData.byCellgroup).forEach(([leader, count]) => {
         summaryRows.push([leader, count]);
       });
-      
+
       summaryRows.push([''], ['TOTAL', summaryData.total]);
     } else {
       summaryRows = [
@@ -420,7 +420,7 @@ const UserLists = () => {
         ['LESSON COMPLETION BREAKDOWN'],
         ['Lesson', 'Members Completed']
       ];
-      
+
       Object.entries(summaryData.byLesson).forEach(([lesson, count]) => {
         summaryRows.push([lesson, count]);
       });
@@ -428,7 +428,7 @@ const UserLists = () => {
 
     const ws = XLSX.utils.aoa_to_sheet(summaryRows);
     const wb = XLSX.utils.book_new();
-    const sheetName = summaryType === 'attendance' ? 'CKF_Attendance_Summary' : 
+    const sheetName = summaryType === 'attendance' ? 'CKF_Attendance_Summary' :
                       summaryType === 'members' ? 'CKF_Members_Directory' : 'CKF_Consolidation_Progress';
     XLSX.utils.book_append_sheet(wb, ws, sheetName);
     const fileName = `${sheetName}_${currentDate.replace(/\//g, '-')}.xlsx`;
@@ -529,7 +529,7 @@ const UserLists = () => {
       if (!record) return;
 
       const updatedValue = !record[lessonKey];
-      
+
       await axios.put(`${CONSOLIDATION_URL}/${recordId}`, {
         [lessonKey]: updatedValue
       });
@@ -760,11 +760,11 @@ const UserLists = () => {
         'Status': record.status || 'Active',
         'Progress': `${getProgressPercentage(record)}%`
       };
-      
+
       consolidationColumns.forEach(col => {
         row[col] = record[col] ? '✓' : '';
       });
-      
+
       return row;
     });
 
@@ -790,9 +790,9 @@ const UserLists = () => {
     setConsolidationFilterProgress('all');
   };
 
-  if (loading && activeTab === 'attendance') return <div className="loading">Loading attendance records...</div>;
-  if (membersLoading && activeTab === 'members') return <div className="loading">Loading CKF members...</div>;
-  if (consolidationLoading && activeTab === 'consolidation') return <div className="loading">Loading consolidation records...</div>;
+  if (loading && activeTab === 'attendance') return <div className="loading">Loading attendance records…</div>;
+  if (membersLoading && activeTab === 'members') return <div className="loading">Loading CKF members…</div>;
+  if (consolidationLoading && activeTab === 'consolidation') return <div className="loading">Loading consolidation records…</div>;
 
   return (
     <div className="user-list-container">
@@ -827,11 +827,11 @@ const UserLists = () => {
           <div className="controls">
             <div className="left-controls">
               <Link to="/add" className="add-button">
-                + Add Attendance
+                Add Attendance
               </Link>
               {users.length > 0 && (
-                <button 
-                  onClick={() => setShowClearConfirmModal(true)} 
+                <button
+                  onClick={() => setShowClearConfirmModal(true)}
                   className="clear-all-btn"
                   disabled={clearingAttendance}
                 >
@@ -891,8 +891,8 @@ const UserLists = () => {
           {filteredUsers.length === 0 ? (
             <div className="empty-message">
               {filterCategory === 'all' && !filterDate
-                ? 'No attendance records yet. Add your first member!'
-                : `No members found matching your filters.`}
+                ? 'No attendance logged yet — add the first check-in to get started.'
+                : 'Nothing matches these filters. Try widening the date or category.'}
             </div>
           ) : (
             <div className="table-wrapper">
@@ -939,11 +939,11 @@ const UserLists = () => {
       {activeTab === 'members' && (
         <>
           <div className="controls">
-            <button 
+            <button
               onClick={openAddMemberModal}
               className="add-button"
             >
-              + Add New Member
+              Add New Member
             </button>
 
             <div className="filter-group">
@@ -1003,8 +1003,8 @@ const UserLists = () => {
           {filteredMembers.length === 0 ? (
             <div className="empty-message">
               {memberSearch || memberFilterStatus !== 'all'
-                ? `No members found matching your filters.`
-                : 'No CKF members found in the database.'}
+                ? 'Nothing matches these filters. Try a different name or status.'
+                : 'No members yet — add the first one to start the directory.'}
             </div>
           ) : (
             <div className="table-wrapper">
@@ -1058,11 +1058,11 @@ const UserLists = () => {
         <>
           <div className="controls">
             <div className="left-controls">
-              <button 
+              <button
                 onClick={openConsolidationModal}
                 className="add-button"
               >
-                + Add Members
+                Add Members
               </button>
             </div>
 
@@ -1118,8 +1118,8 @@ const UserLists = () => {
           {filteredConsolidation.length === 0 ? (
             <div className="empty-message">
               {consolidationSearch || consolidationFilterProgress !== 'all'
-                ? `No members found matching your filters.`
-                : 'No consolidation records yet. Add members to start tracking their progress!'}
+                ? 'Nothing matches these filters. Try a different name or progress stage.'
+                : 'No one is being consolidated yet — add members from the directory to start tracking their lessons.'}
             </div>
           ) : (
             <div className="table-wrapper">
@@ -1141,8 +1141,8 @@ const UserLists = () => {
                         <td className="sticky-col">{record.fullName}</td>
                         <td className="sticky-col progress-cell">
                           <div className="progress-bar-container">
-                            <div 
-                              className="progress-bar" 
+                            <div
+                              className="progress-bar"
                               style={{ width: `${getProgressPercentage(record)}%` }}
                             ></div>
                             <span className="progress-text">{getProgressPercentage(record)}%</span>
@@ -1161,8 +1161,8 @@ const UserLists = () => {
                           </td>
                         ))}
                         <td className="sticky-col actions-col">
-                          <button 
-                            onClick={() => handleDelete(record._id, record.fullName, 'consolidation')} 
+                          <button
+                            onClick={() => handleDelete(record._id, record.fullName, 'consolidation')}
                             className="delete-btn"
                           >
                             Remove
@@ -1187,18 +1187,18 @@ const UserLists = () => {
               <button className="modal-close" onClick={() => setShowClearConfirmModal(false)}>&times;</button>
             </div>
             <div className="confirm-body">
-              <p>Are you sure you want to clear all attendance records for today?</p>
+              <p>This removes every attendance record for today. This can't be undone.</p>
             </div>
             <div className="modal-footer">
-              <button 
-                onClick={clearAllAttendance} 
-                className="btn-danger" 
+              <button
+                onClick={clearAllAttendance}
+                className="btn-danger"
                 disabled={clearingAttendance}
               >
-                {clearingAttendance ? 'Clearing...' : 'Yes, Clear'}
+                {clearingAttendance ? 'Clearing…' : 'Yes, clear all'}
               </button>
-              <button 
-                onClick={() => setShowClearConfirmModal(false)} 
+              <button
+                onClick={() => setShowClearConfirmModal(false)}
                 className="btn-secondary"
               >
                 Cancel
@@ -1214,13 +1214,13 @@ const UserLists = () => {
           <div className="summary-modal-content" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <h2>
-                {summaryType === 'attendance' ? 'Attendance Summary Report' : 
-                 summaryType === 'members' ? 'Members Directory Summary' : 
+                {summaryType === 'attendance' ? 'Attendance Summary Report' :
+                 summaryType === 'members' ? 'Members Directory Summary' :
                  'Consolidation Progress Report'}
               </h2>
               <button className="modal-close" onClick={() => setShowSummaryModal(false)}>&times;</button>
             </div>
-            
+
             <div className="summary-body">
               <div className="summary-info">
                 <p><strong>Generated:</strong> {new Date().toLocaleDateString()}</p>
@@ -1424,15 +1424,15 @@ const UserLists = () => {
               <button className="modal-close" onClick={() => setIsConsolidationModalOpen(false)}>&times;</button>
             </div>
             {consolidationAddError && <div className="error-message">{consolidationAddError}</div>}
-            
+
             <div className="modal-body">
               {availableMembers.length === 0 ? (
-                <p className="empty-message">All members are already in consolidation tracking.</p>
+                <p className="empty-message">Every member in the directory is already being consolidated.</p>
               ) : (
                 <>
                   <div className="member-selection-info">
                     <p>Select members to add to consolidation:</p>
-                    <p className="selection-count">{selectedMembers.length} member(s) selected</p>
+                    <p className="selection-count">{selectedMembers.length} selected</p>
                   </div>
                   <div className="member-list">
                     {availableMembers.map(member => (
@@ -1457,15 +1457,15 @@ const UserLists = () => {
             </div>
 
             <div className="modal-footer">
-              <button 
-                onClick={handleAddToConsolidation} 
-                className="btn-primary" 
+              <button
+                onClick={handleAddToConsolidation}
+                className="btn-primary"
                 disabled={addingConsolidation || selectedMembers.length === 0}
               >
-                {addingConsolidation ? 'Adding...' : `Add ${selectedMembers.length} Member(s)`}
+                {addingConsolidation ? 'Adding…' : `Add ${selectedMembers.length} member(s)`}
               </button>
-              <button 
-                onClick={() => setIsConsolidationModalOpen(false)} 
+              <button
+                onClick={() => setIsConsolidationModalOpen(false)}
                 className="btn-secondary"
               >
                 Cancel
@@ -1558,7 +1558,7 @@ const UserLists = () => {
 
               <div className="button-group">
                 <button type="submit" className="btn-primary" disabled={saving}>
-                  {saving ? 'Saving...' : 'Save Changes'}
+                  {saving ? 'Saving…' : 'Save Changes'}
                 </button>
                 <button type="button" className="btn-secondary" onClick={closeModal}>
                   Cancel
@@ -1667,7 +1667,7 @@ const UserLists = () => {
 
               <div className="button-group">
                 <button type="submit" className="btn-primary" disabled={memberSaving}>
-                  {memberSaving ? 'Saving...' : 'Save Changes'}
+                  {memberSaving ? 'Saving…' : 'Save Changes'}
                 </button>
                 <button type="button" className="btn-secondary" onClick={closeMemberModal}>
                   Cancel
@@ -1789,7 +1789,7 @@ const UserLists = () => {
 
               <div className="button-group">
                 <button type="submit" className="btn-primary" disabled={addingMember}>
-                  {addingMember ? 'Adding Member...' : 'Add Member'}
+                  {addingMember ? 'Adding Member…' : 'Add Member'}
                 </button>
                 <button type="button" className="btn-secondary" onClick={closeAddMemberModal}>
                   Cancel
