@@ -306,7 +306,7 @@ const UserInput = () => {
                     <>✓ Add Attendance</>
                   )}
                 </button>
-                <button type="button" className="btn-cancel" onClick={() => navigate('/')}>Cancel</button>
+                <button type="button" className="btn-cancel" onClick={() => navigate('/userlists')}>Cancel</button>
               </div>
             </form>
           </div>
