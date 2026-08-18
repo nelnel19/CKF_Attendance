@@ -1130,7 +1130,7 @@ body {
   font-weight: 500;
 }
 
-/* ===== SUMMARY MODAL - Enhanced for readability ===== */
+/* ===== SUMMARY MODAL - Enhanced for readability and alignment ===== */
 .summary-modal-content {
   background: #FFFFFF;
   border-radius: 20px;
@@ -1154,10 +1154,14 @@ body {
   border-radius: 12px;
   margin-bottom: 1.5rem;
   border: 1px solid #E8E0D4;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
 }
 
 .summary-info p {
-  margin: 0.25rem 0;
+  margin: 0;
   font-size: 0.9rem;
   color: #4A3A2A;
   font-weight: 600;
@@ -1186,20 +1190,23 @@ body {
 }
 
 .summary-stats {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
   gap: 1rem;
-  flex-wrap: wrap;
+  align-items: stretch;
 }
 
 .stat-card {
-  flex: 1;
-  min-width: 120px;
   background: #FCFAF7;
   padding: 1.1rem;
   border-radius: 12px;
   text-align: center;
   border: 1px solid #E8E0D4;
   transition: transform var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 .stat-card:hover {
@@ -1225,6 +1232,7 @@ body {
   font-weight: 900;
   color: #000000; /* Pure black */
   font-variant-numeric: tabular-nums;
+  line-height: 1;
 }
 
 .summary-modal-content .summary-info p {
@@ -1233,11 +1241,24 @@ body {
   font-size: 1rem;
 }
 
+.summary-modal-content .summary-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 0.5rem;
+}
+
+.summary-modal-content .summary-table th,
+.summary-modal-content .summary-table td {
+  padding: 0.75rem 0.9rem;
+  text-align: center;
+  border: 1px solid #E8E0D4;
+}
+
 .summary-modal-content .summary-table th {
   background: #1E1A17;
   color: #F2E8D5;
   font-weight: 800;
-  padding: 0.8rem 1rem;
+  font-size: 0.74rem;
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
@@ -1246,6 +1267,11 @@ body {
   color: #1E1A17;
   font-weight: 700;
   font-size: 0.9rem;
+}
+
+.summary-modal-content .summary-table td:first-child,
+.summary-modal-content .summary-table th:first-child {
+  text-align: left;
 }
 
 .summary-modal-content .summary-total td {
@@ -1486,7 +1512,7 @@ a:focus-visible {
   }
 
   .summary-stats {
-    flex-direction: column;
+    grid-template-columns: 1fr;
   }
 
   .member-select-item {
