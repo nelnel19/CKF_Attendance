@@ -1245,6 +1245,7 @@ const UserLists = () => {
                 className="btn-danger"
                 disabled={clearingAttendance}
               >
+                {clearingAttendance && <span className="spinner-sm" />}
                 {clearingAttendance ? 'Clearing…' : 'Yes, clear all'}
               </button>
               <button
@@ -1512,6 +1513,7 @@ const UserLists = () => {
                 className="btn-primary"
                 disabled={addingConsolidation || selectedMembers.length === 0}
               >
+                {addingConsolidation && <span className="spinner-sm" />}
                 {addingConsolidation ? 'Adding…' : `Add ${selectedMembers.length} member(s)`}
               </button>
               <button
@@ -1608,6 +1610,7 @@ const UserLists = () => {
 
               <div className="button-group">
                 <button type="submit" className="btn-primary" disabled={saving}>
+                  {saving && <span className="spinner-sm" />}
                   {saving ? 'Saving…' : 'Save Changes'}
                 </button>
                 <button type="button" className="btn-secondary" onClick={closeModal}>
@@ -1717,6 +1720,7 @@ const UserLists = () => {
 
               <div className="button-group">
                 <button type="submit" className="btn-primary" disabled={memberSaving}>
+                  {memberSaving && <span className="spinner-sm" />}
                   {memberSaving ? 'Saving…' : 'Save Changes'}
                 </button>
                 <button type="button" className="btn-secondary" onClick={closeMemberModal}>
@@ -1839,6 +1843,7 @@ const UserLists = () => {
 
               <div className="button-group">
                 <button type="submit" className="btn-primary" disabled={addingMember}>
+                  {addingMember && <span className="spinner-sm" />}
                   {addingMember ? 'Adding Member…' : 'Add Member'}
                 </button>
                 <button type="button" className="btn-secondary" onClick={closeAddMemberModal}>
