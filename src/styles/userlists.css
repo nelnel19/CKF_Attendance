@@ -64,6 +64,15 @@ body {
   text-rendering: optimizeLegibility;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 /* ===== KEYFRAMES ===== */
 @keyframes fadeInUp {
   from { opacity: 0; transform: translateY(10px); }
@@ -1121,7 +1130,7 @@ body {
   font-weight: 500;
 }
 
-/* ===== SUMMARY MODAL ===== */
+/* ===== SUMMARY MODAL - Enhanced for readability ===== */
 .summary-modal-content {
   background: #FFFFFF;
   border-radius: 20px;
