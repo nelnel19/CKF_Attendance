@@ -1207,68 +1207,120 @@ body {
   box-shadow: var(--shadow-sm);
 }
 
-.stat-label {
+/* ===== ENHANCED SUMMARY MODAL TEXT VISIBILITY ===== */
+.summary-modal-content .stat-label {
   display: block;
   font-size: 0.72rem;
-  font-weight: 700;
-  color: #6B5A45;
+  font-weight: 800;
+  color: #000000; /* Pure black for maximum contrast */
   text-transform: uppercase;
   letter-spacing: 0.05em;
   margin-bottom: 0.5rem;
 }
 
-.stat-number {
+.summary-modal-content .stat-number {
   display: block;
   font-family: 'Manrope', 'Inter', sans-serif;
-  font-size: 1.9rem;
-  font-weight: 800;
-  color: #1E1A17;
+  font-size: 2rem;
+  font-weight: 900;
+  color: #000000; /* Pure black */
   font-variant-numeric: tabular-nums;
 }
 
-.summary-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 0.5rem;
-}
-
-.summary-table th,
-.summary-table td {
-  padding: 0.75rem 0.9rem;
-  text-align: left;
-  border: 1px solid #E8E0D4;
-}
-
-.summary-table th {
-  background: #FCFAF7;
+.summary-modal-content .summary-info p {
+  color: #000000;
   font-weight: 700;
-  font-size: 0.74rem;
+  font-size: 1rem;
+}
+
+.summary-modal-content .summary-table th {
+  background: #1E1A17;
+  color: #F2E8D5;
+  font-weight: 800;
+  padding: 0.8rem 1rem;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  color: #6B5A45;
 }
 
-.summary-table td {
-  font-size: 0.88rem;
-  color: #4A3A2A;
-  font-weight: 500;
-  background: #FFFFFF;
-}
-
-.summary-total {
-  background: #FBF7F0;
+.summary-modal-content .summary-table td {
+  color: #1E1A17;
   font-weight: 700;
+  font-size: 0.9rem;
 }
 
+.summary-modal-content .summary-total td {
+  background: #FBF7F0;
+  color: #000000;
+  font-weight: 900;
+}
+
+/* ===== ENHANCED BUTTONS IN MODALS ===== */
 .export-summary-btn {
-  background: #CBB38F;
+  background: linear-gradient(135deg, #CBB38F 0%, #B89A6E 100%);
   color: #FFFFFF;
-  border: 1px solid #CBB38F;
+  border: 2px solid #B89A6E;
+  padding: 0.8rem 1.5rem;
+  font-weight: 800;
+  font-size: 0.9rem;
+  letter-spacing: 0.02em;
+  box-shadow: 0 4px 12px rgba(184, 154, 110, 0.3);
+  transition: all var(--dur-fast) var(--ease-out);
 }
 
 .export-summary-btn:hover:not(:disabled) {
-  background: #B89A6E;
-  border-color: #B89A6E;
+  background: linear-gradient(135deg, #B89A6E 0%, #A8895D 100%);
+  border-color: #A8895D;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(184, 154, 110, 0.4);
+}
+
+.export-summary-btn:active:not(:disabled) {
+  transform: translateY(0) scale(0.98);
+}
+
+.modal-footer .btn-secondary {
+  background: #FFFFFF;
+  color: #1E1A17;
+  border: 2px solid #1E1A17;
+  padding: 0.8rem 1.5rem;
+  font-weight: 800;
+  font-size: 0.9rem;
+  letter-spacing: 0.02em;
+  transition: all var(--dur-fast) var(--ease-out);
+}
+
+.modal-footer .btn-secondary:hover {
+  background: #1E1A17;
+  border-color: #1E1A17;
+  color: #F2E8D5;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(30, 26, 23, 0.15);
+}
+
+.modal-footer .btn-secondary:active {
+  transform: translateY(0) scale(0.98);
+}
+
+/* Modal close button enhancement */
+.modal-header .modal-close {
+  background: #F8F5F0;
+  border: 2px solid #D4C9B8;
+  font-size: 1.5rem;
+  color: #1E1A17;
+  transition: all var(--dur-fast) var(--ease-out);
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.modal-header .modal-close:hover {
+  background: #1E1A17;
+  border-color: #1E1A17;
+  color: #F2E8D5;
+  transform: rotate(90deg);
 }
 
 /* ===== FORM INFO ===== */
