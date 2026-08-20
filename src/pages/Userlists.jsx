@@ -105,6 +105,7 @@ const UserLists = () => {
   const [selectedMembers, setSelectedMembers] = useState([]);
   const [addingConsolidation, setAddingConsolidation] = useState(false);
   const [consolidationAddError, setConsolidationAddError] = useState('');
+  const [consolidationMemberSearch, setConsolidationMemberSearch] = useState(''); // NEW
 
   // Sliding tab indicator
   const tabRefs = useRef({});
@@ -209,7 +210,7 @@ const UserLists = () => {
     return matchCategory && matchDate;
   });
 
-  // Filter CKF members by status and search
+  // Filter CKF members by status and search - SORTED ALPHABETICALLY
   const [memberFilterStatus, setMemberFilterStatus] = useState('all');
   const [memberSearch, setMemberSearch] = useState('');
 
@@ -228,9 +229,9 @@ const UserLists = () => {
     }
 
     return matchStatus && matchSearch;
-  });
+  }).sort((a, b) => a.fullName.localeCompare(b.fullName)); // alphabetical sort
 
-  // Filter consolidation records by search
+  // Filter consolidation records by search and progress - SORTED ALPHABETICALLY
   const [consolidationSearch, setConsolidationSearch] = useState('');
   const [consolidationFilterProgress, setConsolidationFilterProgress] = useState('all');
 
@@ -257,7 +258,7 @@ const UserLists = () => {
     }
 
     return matchSearch && matchProgress;
-  });
+  }).sort((a, b) => a.fullName.localeCompare(b.fullName)); // alphabetical sort
 
   // Clear all attendance records
   const clearAllAttendance = async () => {
@@ -507,9 +508,13 @@ const UserLists = () => {
   const openConsolidationModal = () => {
     // Get members that are not already in consolidation
     const existingNames = consolidationRecords.map(r => r.fullName);
-    const available = ckfMembers.filter(m => !existingNames.includes(m.fullName));
+    const available = ckfMembers
+      .filter(m => !existingNames.includes(m.fullName))
+      .sort((a, b) => a.fullName.localeCompare(b.fullName)); // alphabetical
+
     setAvailableMembers(available);
     setSelectedMembers([]);
+    setConsolidationMemberSearch(''); // reset search
     setConsolidationAddError('');
     setIsConsolidationModalOpen(true);
   };
@@ -1481,27 +1486,42 @@ const UserLists = () => {
                 <p className="empty-message">Every member in the directory is already being consolidated.</p>
               ) : (
                 <>
+                  {/* Search input inside modal */}
+                  <div className="filter" style={{ marginBottom: '0.75rem' }}>
+                    <label htmlFor="consolidationMemberSearch">Search:</label>
+                    <input
+                      type="text"
+                      id="consolidationMemberSearch"
+                      value={consolidationMemberSearch}
+                      onChange={(e) => setConsolidationMemberSearch(e.target.value)}
+                      placeholder="Search by name..."
+                      className="search-input"
+                    />
+                  </div>
+
                   <div className="member-selection-info">
                     <p>Select members to add to consolidation:</p>
                     <p className="selection-count">{selectedMembers.length} selected</p>
                   </div>
                   <div className="member-list">
-                    {availableMembers.map(member => (
-                      <div key={member._id} className="member-select-item">
-                        <label className="checkbox-container">
-                          <input
-                            type="checkbox"
-                            checked={selectedMembers.some(m => m._id === member._id)}
-                            onChange={() => toggleMemberSelection(member)}
-                          />
-                          <span className="checkmark"></span>
-                        </label>
-                        <span className="member-name">{member.fullName}</span>
-                        <span className="member-details">
-                          {member.gender} • Age {member.age} • {member.cellgroupLeader}
-                        </span>
-                      </div>
-                    ))}
+                    {availableMembers
+                      .filter(m => m.fullName.toLowerCase().includes(consolidationMemberSearch.toLowerCase()))
+                      .map(member => (
+                        <div key={member._id} className="member-select-item">
+                          <label className="checkbox-container">
+                            <input
+                              type="checkbox"
+                              checked={selectedMembers.some(m => m._id === member._id)}
+                              onChange={() => toggleMemberSelection(member)}
+                            />
+                            <span className="checkmark"></span>
+                          </label>
+                          <span className="member-name">{member.fullName}</span>
+                          <span className="member-details">
+                            {member.gender} • Age {member.age} • {member.cellgroupLeader}
+                          </span>
+                        </div>
+                      ))}
                   </div>
                 </>
               )}
